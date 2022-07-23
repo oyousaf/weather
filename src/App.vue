@@ -130,7 +130,7 @@ body {
 }
 
 main {
-  height: 100vh;
+  min-height: 100vh;
   padding: 25px;
   background-image: linear-gradient(
     to bottom,
