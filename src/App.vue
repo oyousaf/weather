@@ -12,18 +12,8 @@
           class="search-bar"
           placeholder="Enter location..."
           v-model="query"
-          @input="fetchPlaceSuggestions"
           @keypress="fetchWeather"
         />
-        <ul class="suggestion-list" v-if="suggestions.length > 0">
-          <li
-            v-for="suggestion in suggestions"
-            :key="suggestion.id"
-            @click="selectSuggestion(suggestion)"
-          >
-            {{ suggestion.name }}, {{ suggestion.sys.country }}
-          </li>
-        </ul>
       </div>
 
       <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
@@ -57,11 +47,10 @@ export default {
   name: "app",
   data() {
     return {
-      api_key: "ac2a871eee864ddb1ff663cad3635667",
+      api_key: process.env.VUE_APP_WEATHER_API_KEY,
       url_base: "https://api.openweathermap.org/data/2.5/",
       query: "",
       weather: {},
-      suggestions: [],
     };
   },
   methods: {
@@ -111,28 +100,6 @@ export default {
       let year = d.getFullYear();
 
       return `${day} ${date} ${month} ${year}`;
-    },
-    fetchPlaceSuggestions() {
-      if (this.query.trim() === "") {
-        // If the query is empty, clear any previous suggestions.
-        this.suggestions = [];
-        return;
-      }
-
-      fetch(
-        `${this.url_base}find?q=${this.query}&type=like&sort=population&cnt=5&APPID=${this.api_key}`
-      )
-        .then((res) => res.json())
-        .then((data) => {
-          this.suggestions = data.list;
-        })
-        .catch((error) => {
-          console.error("Error fetching place suggestions:", error);
-        });
-    },
-    selectSuggestion(suggestion) {
-      this.query = `${suggestion.name}, ${suggestion.sys.country}`;
-      this.suggestions = []; // Clear the suggestions list
     },
   },
 };
@@ -267,25 +234,4 @@ main {
   font-style: italic;
   text-shadow: 3px 6px rgba(0, 0, 0, 0.25);
 }
-
-.suggestion-list {
-    width: 100%;
-    max-height: 150px;
-    overflow-y: auto;
-    background-color: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .suggestion-list li {
-    padding: 10px;
-    cursor: pointer;
-  }
-
-  .suggestion-list li:hover {
-    background-color: #f5f5f5;
-  }
 </style>
