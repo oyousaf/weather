@@ -12,8 +12,18 @@
           class="search-bar"
           placeholder="Enter location..."
           v-model="query"
+          @input="fetchPlaceSuggestions"
           @keypress="fetchWeather"
         />
+        <ul class="suggestion-list" v-if="suggestions.length > 0">
+          <li
+            v-for="suggestion in suggestions"
+            :key="suggestion.id"
+            @click="selectSuggestion(suggestion)"
+          >
+            {{ suggestion.name }}, {{ suggestion.sys.country }}
+          </li>
+        </ul>
       </div>
 
       <div class="weather-wrap" v-if="typeof weather.main != 'undefined'">
@@ -51,6 +61,7 @@ export default {
       url_base: "https://api.openweathermap.org/data/2.5/",
       query: "",
       weather: {},
+      suggestions: [],
     };
   },
   methods: {
@@ -100,6 +111,41 @@ export default {
       let year = d.getFullYear();
 
       return `${day} ${date} ${month} ${year}`;
+    },
+    fetchPlaceSuggestions() {
+      if (this.query.trim() === "") {
+        // If the query is empty, clear any previous suggestions.
+        this.suggestions = [];
+        return;
+      }
+
+      fetch(
+        `${this.url_base}find?q=${this.query}&type=like&sort=population&cnt=5&APPID=${this.api_key}`
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          this.suggestions = data.list;
+        })
+        .catch((error) => {
+          console.error("Error fetching place suggestions:", error);
+        });
+    },
+    async selectSuggestion(suggestion) {
+      this.query = `${suggestion.name}, ${suggestion.sys.country}`;
+      this.suggestions = []; // Clear the suggestions list
+
+      // Fetch weather information based on the selected suggestion
+      try {
+        const response = await fetch(
+          `${this.url_base}weather?q=${suggestion.name},${suggestion.sys.country}&units=metric&APPID=${this.api_key}`
+        );
+        const weatherData = await response.json();
+
+        // Update the weather data
+        this.weather = weatherData;
+      } catch (error) {
+        console.error("Error fetching weather data:", error);
+      }
     },
   },
 };
@@ -233,5 +279,26 @@ main {
   font-weight: bold;
   font-style: italic;
   text-shadow: 3px 6px rgba(0, 0, 0, 0.25);
+}
+
+.suggestion-list {
+  width: 100%;
+  max-height: 150px;
+  overflow-y: auto;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.suggestion-list li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.suggestion-list li:hover {
+  background-color: #f5f5f5;
 }
 </style>
