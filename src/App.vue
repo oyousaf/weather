@@ -57,7 +57,7 @@ export default {
   name: "app",
   data() {
     return {
-      api_key: process.env.VUE_APP_WEATHER_API_KEY,
+      api_key: "ac2a871eee864ddb1ff663cad3635667",
       url_base: "https://api.openweathermap.org/data/2.5/",
       query: "",
       weather: {},
@@ -130,23 +130,10 @@ export default {
           console.error("Error fetching place suggestions:", error);
         });
     },
-    async selectSuggestion(suggestion) {
-    this.query = `${suggestion.name}, ${suggestion.sys.country}`;
-    this.suggestions = []; // Clear the suggestions list
-
-    // Fetch weather information based on the selected suggestion
-    try {
-      const response = await fetch(
-        `${this.url_base}weather?q=${suggestion.name},${suggestion.sys.country}&units=metric&APPID=${this.api_key}`
-      );
-      const weatherData = await response.json();
-
-      // Update the weather data
-      this.weather = weatherData;
-    } catch (error) {
-      console.error("Error fetching weather data:", error);
-    }
-  },
+    selectSuggestion(suggestion) {
+      this.query = `${suggestion.name}, ${suggestion.sys.country}`;
+      this.suggestions = []; // Clear the suggestions list
+    },
   },
 };
 </script>
