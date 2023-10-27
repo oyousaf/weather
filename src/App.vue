@@ -30,12 +30,12 @@
         </div>
         <br />
         <div class="weather-box">
-            <p class="weather2">Feels like</p>
-            <p class="temp2">{{ weather.main.feels_like.toFixed(0) }}°C</p>
-            <p class="weather2">Humidity</p>
-            <p class="temp2">{{ weather.main.humidity }}%</p>
-            <p class="weather2">Winds</p>
-            <p class="temp2">{{ weather.wind.speed.toFixed(0) }} MPH</p>
+          <p class="weather2">Feels like</p>
+          <p class="temp2">{{ weather.main.feels_like.toFixed(0) }}°C</p>
+          <p class="weather2">Humidity</p>
+          <p class="temp2">{{ weather.main.humidity }}%</p>
+          <p class="weather2">Winds</p>
+          <p class="temp2">{{ weather.wind.speed.toFixed(0) }} MPH</p>
         </div>
       </div>
     </main>
@@ -47,7 +47,7 @@ export default {
   name: "app",
   data() {
     return {
-      api_key: "ac2a871eee864ddb1ff663cad3635667",
+      api_key: process.env.VUE_APP_WEATHER_API_KEY,
       url_base: "https://api.openweathermap.org/data/2.5/",
       query: "",
       weather: {},
@@ -162,6 +162,12 @@ main {
 }
 
 .search-box .search-bar:focus {
+  box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.25);
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 16px 0px 16px 0px;
+}
+
+.suggestion-list {
   box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.25);
   background-color: rgba(255, 255, 255, 0.75);
   border-radius: 16px 0px 16px 0px;
