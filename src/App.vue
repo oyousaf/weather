@@ -131,22 +131,22 @@ export default {
         });
     },
     async selectSuggestion(suggestion) {
-      this.query = `${suggestion.name}, ${suggestion.sys.country}`;
-      this.suggestions = []; // Clear the suggestions list
+    this.query = `${suggestion.name}, ${suggestion.sys.country}`;
+    this.suggestions = []; // Clear the suggestions list
 
-      // Fetch weather information based on the selected suggestion
-      try {
-        const response = await fetch(
-          `${this.url_base}weather?q=${suggestion.name},${suggestion.sys.country}&units=metric&APPID=${this.api_key}`
-        );
-        const weatherData = await response.json();
+    // Fetch weather information based on the selected suggestion
+    try {
+      const response = await fetch(
+        `${this.url_base}weather?q=${suggestion.name},${suggestion.sys.country}&units=metric&APPID=${this.api_key}`
+      );
+      const weatherData = await response.json();
 
-        // Update the weather data
-        this.weather = weatherData;
-      } catch (error) {
-        console.error("Error fetching weather data:", error);
-      }
-    },
+      // Update the weather data
+      this.weather = weatherData;
+    } catch (error) {
+      console.error("Error fetching weather data:", error);
+    }
+  },
   },
 };
 </script>
@@ -282,23 +282,23 @@ main {
 }
 
 .suggestion-list {
-  width: 100%;
-  max-height: 150px;
-  overflow-y: auto;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
+    width: 100%;
+    max-height: 150px;
+    overflow-y: auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
 
-.suggestion-list li {
-  padding: 10px;
-  cursor: pointer;
-}
+  .suggestion-list li {
+    padding: 10px;
+    cursor: pointer;
+  }
 
-.suggestion-list li:hover {
-  background-color: #f5f5f5;
-}
+  .suggestion-list li:hover {
+    background-color: #f5f5f5;
+  }
 </style>
