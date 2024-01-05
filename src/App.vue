@@ -45,14 +45,19 @@
 <script>
 export default {
   name: "app",
+  
   data() {
     return {
       api_key: process.env.VUE_APP_WEATHER_API_KEY,
       url_base: "https://api.openweathermap.org/data/2.5/",
       query: "",
-      weather: {},
+      weather: {
+        current: {},
+        timezone: "",
+      },
     };
   },
+
   methods: {
     fetchWeather(e) {
       if (e.key == "Enter") {
@@ -68,6 +73,7 @@ export default {
     setResults(results) {
       this.weather = results;
     },
+
     dateBuilder() {
       let d = new Date();
       let months = [
