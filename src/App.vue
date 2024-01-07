@@ -16,7 +16,7 @@
         />
       </div>
 
-      <div class="weather-wrap" v-if="weather.main">
+      <div class="" v-if="weather.main">
         <div class="location-box">
           <div class="location">
             {{ weather.name }}, {{ weather.sys.country }}
