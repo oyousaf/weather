@@ -33,7 +33,7 @@
           >
             {{ Math.round(weather.main.temp) }}°C
           </div>
-          <div class="text-5xl font-bold italic text-shadow-lg">
+          <div class="text-7xl font-bold italic text-shadow-lg">
             {{ weather.weather[0].main }}
           </div>
         </div>
