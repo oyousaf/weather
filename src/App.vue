@@ -6,10 +6,10 @@
     "
   >
     <main>
-      <div class="search-box">
+      <div class="w-full mb-[30px]">
         <input
           type="text"
-          class="search-bar"
+          class="w-full p-4 text-gray-700 text-xl outline-none bg-white/70 focus:bg-white transition-all duration-300 shadow-md rounded-full focus:ring-4 focus:ring-teal-600 focus:border-transparent"
           placeholder="Enter location..."
           v-model="query"
           @keypress="fetchWeather"
