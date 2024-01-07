@@ -6,7 +6,7 @@
     "
   >
     <main>
-      <div class="w-full mb-[30px]">
+      <div class="w-full mb-8">
         <input
           type="text"
           class="w-full p-4 text-gray-700 text-xl outline-none bg-white/70 focus:bg-white transition-all duration-300 shadow-md rounded-full focus:ring-4 focus:ring-teal-600 focus:border-transparent"
@@ -16,26 +16,62 @@
         />
       </div>
 
-      <div class="" v-if="weather.main">
-        <div class="location-box">
-          <div class="location">
+      <div
+        class="text-center items-center justify-center content-center text-white"
+        v-if="weather.main"
+      >
+        <div>
+          <div class="text-3xl font-medium text-shadow-md">
             {{ weather.name }}, {{ weather.sys.country }}
           </div>
-          <div class="date">{{ dateBuilder() }}</div>
+          <div class="text-2xl font-light italic">{{ dateBuilder() }}</div>
         </div>
 
-        <div class="weather-box">
-          <div class="temp">{{ Math.round(weather.main.temp) }}°C</div>
-          <div class="weather">{{ weather.weather[0].main }}</div>
+        <div>
+          <div
+            class="inline-block items-center justify-center p-4 text-9xl font-bold text-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
+          >
+            {{ Math.round(weather.main.temp) }}°C
+          </div>
+          <div class="text-5xl font-bold italic text-shadow-lg">
+            {{ weather.weather[0].main }}
+          </div>
         </div>
         <br />
-        <div class="weather-box">
-          <p class="weather2">Feels like</p>
-          <p class="temp2">{{ weather.main.feels_like.toFixed(0) }}°C</p>
-          <p class="weather2">Humidity</p>
-          <p class="temp2">{{ weather.main.humidity }}%</p>
-          <p class="weather2">Winds</p>
-          <p class="temp2">{{ weather.wind.speed.toFixed(0) }} MPH</p>
+        <div>
+          <p
+            class="text-lg font-bold italic"
+            :style="{ 'text-shadow': '2px 2px 4px rgba(0, 0, 0, 0.5)' }"
+          >
+            Feels like
+          </p>
+          <p
+            class="inline-block items-center justify-center p-4 text-5xl font-extrabold text-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
+          >
+            {{ weather.main.feels_like.toFixed(0) }}°C
+          </p>
+          <p
+            class="text-lg font-bold italic"
+            :style="{ 'text-shadow': '2px 2px 4px rgba(0, 0, 0, 0.5)' }"
+          >
+            Humidity
+          </p>
+          <p
+            class="inline-block w-32 text-center items-center justify-center p-4 text-5xl font-extrabold text-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
+          >
+            {{ weather.main.humidity }}%
+          </p>
+          <p
+            class="text-lg font-bold italic"
+            :style="{ 'text-shadow': '2px 2px 4px rgba(0, 0, 0, 0.5)' }"
+          >
+            Winds
+          </p>
+          <p
+            class="inline-block items-center justify-center p-4 text-5xl font-extrabold text-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
+          >
+            {{ weather.wind.speed.toFixed(0) }} MPH
+          </p>
         </div>
       </div>
     </main>
