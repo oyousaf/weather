@@ -17,6 +17,7 @@ export default {
         );
       },
     },
+    
     methods: {
       fetchWeather(e) {
         if (e.key == "Enter") {
@@ -30,6 +31,7 @@ export default {
       setResults(results) {
         this.weather = results;
       },
+
       dateBuilder() {
         let d = new Date();
         let months = [
@@ -63,6 +65,7 @@ export default {
   
         return `${day} ${date} ${month} ${year}`;
       },
+
       formatTemperature(value) {
         if (this.temperatureUnit === "Celsius") {
           return `${Math.round(value)}°C`;
