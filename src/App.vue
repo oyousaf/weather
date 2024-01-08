@@ -12,7 +12,7 @@
       </div>
 
       <div
-        class="text-center items-center justify-center content-center text-white"
+        class="text-center text-white"
         v-if="weather.main"
       >
         <!-- Location -->
