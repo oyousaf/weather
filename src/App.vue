@@ -24,6 +24,7 @@
         >
           {{ formatTemperature(weather.main.temp) }}
         </div>
+        
         <!-- Toggle Units Button -->
         <button @click="toggleUnits" class="flex uppercase mx-auto m-4 p-2 font-bold bg-teal-500 shadow-teal-500 rounded-md hover:bg-teal-600 transition-all duration-300">
           {{ temperatureUnit === 'Celsius' ? 'Imperial' : 'Metric' }}
