@@ -6,6 +6,7 @@ export default {
         url_base: "https://api.openweathermap.org/data/2.5/",
         query: "",
         weather: {},
+        temperatureUnit: "Celsius",
       };
     },
     computed: {
@@ -61,6 +62,18 @@ export default {
         let year = d.getFullYear();
   
         return `${day} ${date} ${month} ${year}`;
+      },
+      formatTemperature(value) {
+        if (this.temperatureUnit === "Celsius") {
+          return `${Math.round(value)}°C`;
+        } else {
+          return `${(value * 9/5 + 32).toFixed(0)}°F`;
+        }
+      },
+  
+      toggleUnits() {
+        this.temperatureUnit = this.temperatureUnit === "Celsius" ? "Fahrenheit" : "Celsius";
+        this.fetchWeather();
       },
     },
   };
