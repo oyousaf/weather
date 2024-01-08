@@ -16,42 +16,42 @@
         v-if="weather.main"
       >
         <!-- Location -->
-          <div class="text-3xl font-medium text-shadow-md">
+          <div class="text-3xl font-medium drop-shadow-md">
             {{ weather.name }}, {{ weather.sys.country }}
           </div>
           <div class="text-2xl font-light italic">{{ dateBuilder() }}</div>
 
         <!-- Temp -->
           <div
-            class="inline-block items-center justify-center p-4 text-9xl font-bold text-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
+            class="inline-block items-center justify-center p-4 text-9xl font-bold drop-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
           >
             {{ Math.round(weather.main.temp) }}°C
           </div>
-          <div class="text-7xl font-bold italic text-shadow-lg">
+          <div class="text-7xl font-bold italic drop-shadow-lg">
             {{ weather.weather[0].main }}
           </div>
         <br />
 
         <!-- Feels like -->
-        <div class="text-2xl font-bold italic">Feels like</div>
+        <div class="text-2xl font-bold italic drop-shadow-lg">Feels like</div>
         <div
-          class="inline-block items-center justify-center p-4 text-5xl font-extrabold text-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
+          class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
         >
           {{ weather.main.feels_like.toFixed(0) }}°C
         </div>
 
         <!-- Humidity -->
-        <div class="text-2xl font-bold italic text-shadow-lg">Humidity</div>
+        <div class="text-2xl font-bold italic drop-shadow-lg">Humidity</div>
         <p
-          class="inline-block w-32 text-center items-center justify-center p-2 text-5xl font-extrabold text-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
+          class="inline-block w-32 text-center items-center justify-center p-2 text-5xl font-extrabold drop-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
         >
           {{ weather.main.humidity }}%
         </p>
 
         <!-- Winds -->
-        <div class="text-2xl font-bold italic text-shadow-lg">Winds</div>
+        <div class="text-2xl font-bold italic drop-shadow-lg">Winds</div>
         <div
-          class="inline-block items-center justify-center p-4 text-5xl font-extrabold text-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
+          class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
         >
           {{ weather.wind.speed.toFixed(0) }} MPH
         </div>
