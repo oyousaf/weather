@@ -39,34 +39,19 @@
         </div>
         <br />
         <div>
-          <p
-            class="text-lg font-bold italic text-shadow-lg"
-            style="{ 'text-shadow': '2px 2px 4px rgba(0, 0, 0, 0.5)' }"
-          >
-            Feels like
-          </p>
+          <p class="text-lg font-bold italic text-shadow-lg">Feels like</p>
           <p
             class="inline-block items-center justify-center p-4 text-5xl font-extrabold text-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
           >
             {{ weather.main.feels_like.toFixed(0) }}°C
           </p>
-          <p
-            class="text-lg font-bold italic"
-            :style="{ 'text-shadow': '2px 2px 4px rgba(0, 0, 0, 0.5)' }"
-          >
-            Humidity
-          </p>
+          <p class="text-lg font-bold italic text-shadow-lg">Humidity</p>
           <p
             class="inline-block w-32 text-center items-center justify-center p-4 text-5xl font-extrabold text-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
           >
             {{ weather.main.humidity }}%
           </p>
-          <p
-            class="text-lg font-bold italic"
-            :style="{ 'text-shadow': '2px 2px 4px rgba(0, 0, 0, 0.5)' }"
-          >
-            Winds
-          </p>
+          <p class="text-lg font-bold italic text-shadow-lg">Winds</p>
           <p
             class="inline-block items-center justify-center p-4 text-5xl font-extrabold text-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
           >
