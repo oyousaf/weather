@@ -34,28 +34,24 @@
           {{ weather.weather[0].main }}
         </div>
 
-        <!-- Feels like -->
-        <div class="p-4 text-2xl font-bold italic drop-shadow-lg">Feels like</div>
-        <div
-          class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg"
-        >
-          {{ formatTemperature(weather.main.feels_like) }}
-        </div>
+          <div class="flex flex-col items-center space-x-4">
+          <!-- Feels Like -->
+          <div class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg">
+            <div class="text-xl text-teal-400 font-bold italic drop-shadow-lg">Feels like</div>
+            {{ formatTemperature(weather.main.feels_like) }}
+          </div>
 
-        <!-- Humidity -->
-        <div class="text-2xl font-bold italic drop-shadow-lg">Humidity</div>
-        <p
-          class="inline-block w-32 text-center items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg"
-        >
-          {{ weather.main.humidity }}%
-        </p>
+          <!-- Humidity -->
+          <div class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg">
+            <div class="text-xl text-teal-400 font-bold italic drop-shadow-lg">Humidity</div>
+            {{ weather.main.humidity }}%
+          </div>
 
-        <!-- Winds -->
-        <div class="text-2xl font-bold italic drop-shadow-lg">Winds</div>
-        <div
-          class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg"
-        >
-          {{ weather.wind.speed.toFixed(0) }} MPH
+          <!-- Winds -->
+          <div class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg">
+            <div class="text-xl text-teal-400 font-bold italic drop-shadow-lg">Winds</div>
+            {{ weather.wind.speed.toFixed(0) }} MPH
+          </div>
         </div>
       </div>
     </main>
