@@ -11,25 +11,28 @@
         />
       </div>
 
-      <div
-        class="text-center text-white"
-        v-if="weather.main"
-      >
+      <div class="text-center text-white" v-if="weather.main">
         <!-- Location -->
-          <div class="text-3xl font-medium drop-shadow-md">
-            {{ weather.name }}, {{ weather.sys.country }}
-          </div>
-          <div class="text-2xl font-light italic drop-shadow-lg">{{ dateBuilder() }}</div>
+        <div class="text-3xl font-medium drop-shadow-md">
+          {{ weather.name }}, {{ weather.sys.country }}
+        </div>
+        <div class="text-2xl font-light italic drop-shadow-lg">{{ dateBuilder() }}</div>
 
         <!-- Temp -->
-          <div
-            class="inline-block items-center justify-center p-4 text-9xl font-bold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg"
-          >
-            {{ Math.round(weather.main.temp) }}°C
-          </div>
-          <div class="text-7xl font-bold italic drop-shadow-lg">
-            {{ weather.weather[0].main }}
-          </div>
+        <div
+          class="inline-block items-center justify-center p-4 text-9xl font-bold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg"
+        >
+          {{ formatTemperature(weather.main.temp) }}
+        </div>
+        <br/>
+        <!-- Toggle Units Button -->
+        <button @click="toggleUnits" class="uppercase m-4 p-2 font-bold bg-teal-500 shadow-teal-500 rounded-md hover:bg-teal-600 transition-all duration-300">
+          {{ temperatureUnit === 'Celsius' ? 'Imperial' : 'Metric' }}
+        </button>
+
+        <div class="text-7xl font-bold italic drop-shadow-lg">
+          {{ weather.weather[0].main }}
+        </div>
         <br />
 
         <!-- Feels like -->
@@ -37,7 +40,7 @@
         <div
           class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg"
         >
-          {{ weather.main.feels_like.toFixed(0) }}°C
+          {{ formatTemperature(weather.main.feels_like) }}
         </div>
 
         <!-- Humidity -->
@@ -59,5 +62,6 @@
     </main>
   </div>
 </template>
+ 
 
 <script src="./script.js"></script>
