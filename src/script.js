@@ -8,13 +8,13 @@ export default {
       weather: {},
       temperatureUnit: "Celsius",
       debounceTimer: null,
+      loading: false,
     };
   },
   computed: {
     isWarm() {
       return (
-        typeof this.weather.main !== "undefined" &&
-        this.weather.main.temp > 16
+        typeof this.weather.main !== "undefined" && this.weather.main.temp > 16
       );
     },
   },
@@ -73,7 +73,7 @@ export default {
       if (this.temperatureUnit === "Celsius") {
         return `${Math.round(value)}°C`;
       } else {
-        return `${(value * 9/5 + 32).toFixed(0)}°F`;
+        return `${((value * 9) / 5 + 32).toFixed(0)}°F`;
       }
     },
     toggleUnits() {

@@ -17,7 +17,9 @@
         <div class="text-3xl font-medium drop-shadow-md">
           {{ weather.name }}, {{ weather.sys.country }}
         </div>
-        <div class="text-2xl font-light italic drop-shadow-lg">{{ dateBuilder() }}</div>
+        <div class="text-2xl font-light italic drop-shadow-lg">
+          {{ dateBuilder() }}
+        </div>
 
         <!-- Temp -->
         <div
@@ -25,32 +27,47 @@
         >
           {{ formatTemperature(weather.main.temp) }}
         </div>
-        
+
         <!-- Toggle Units Button -->
-        <button @click="toggleUnits" class="flex uppercase mx-auto m-4 p-2 font-bold bg-teal-500 shadow-teal-500 rounded-md hover:bg-teal-600 transition-all duration-300">
-          {{ temperatureUnit === 'Celsius' ? 'Imperial' : 'Metric' }}
+        <button
+          @click="toggleUnits"
+          class="flex uppercase mx-auto m-4 p-2 font-bold bg-teal-500 shadow-teal-500 rounded-md hover:bg-teal-600 transition-all duration-300"
+        >
+          {{ temperatureUnit === "Celsius" ? "Imperial" : "Metric" }}
         </button>
 
         <div class="p-2 text-7xl font-bold italic drop-shadow-lg">
           {{ weather.weather[0].main }}
         </div>
 
-          <div class="flex flex-col items-center space-x-4">
+        <div class="flex flex-col items-center space-x-4">
           <!-- Feels Like -->
-          <div class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg">
-            <div class="text-xl text-teal-400 font-bold italic drop-shadow-lg">Feels like</div>
+          <div
+            class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg"
+          >
+            <div class="text-xl text-teal-400 font-bold italic drop-shadow-lg">
+              Feels like
+            </div>
             {{ formatTemperature(weather.main.feels_like) }}
           </div>
 
           <!-- Humidity -->
-          <div class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg">
-            <div class="text-xl text-teal-400 font-bold italic drop-shadow-lg">Humidity</div>
+          <div
+            class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg"
+          >
+            <div class="text-xl text-teal-400 font-bold italic drop-shadow-lg">
+              Humidity
+            </div>
             {{ weather.main.humidity }}%
           </div>
 
           <!-- Winds -->
-          <div class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg">
-            <div class="text-xl text-teal-400 font-bold italic drop-shadow-lg">Winds</div>
+          <div
+            class="inline-block items-center justify-center p-4 text-5xl font-extrabold drop-shadow-lg shadow-teal-500 bg-white/25 rounded-2xl my-8 shadow-lg"
+          >
+            <div class="text-xl text-teal-400 font-bold italic drop-shadow-lg">
+              Winds
+            </div>
             {{ weather.wind.speed.toFixed(0) }} MPH
           </div>
         </div>
@@ -58,6 +75,5 @@
     </main>
   </div>
 </template>
- 
 
 <script src="./script.js"></script>
