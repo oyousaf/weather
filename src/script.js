@@ -85,7 +85,7 @@ export default {
       clearTimeout(this.debounceTimer);
       this.debounceTimer = setTimeout(() => {
         this.fetchWeather();
-      }, 3000);
+      }, 1500);
     },
     handleKeyPress(event) {
       if (event.key === "Enter") {
