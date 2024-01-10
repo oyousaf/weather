@@ -1,5 +1,5 @@
 <template>
-  <div id="app" :class="{ warm: isWarm }">
+  <div id="app" :class="[temperatureClass]">
     <main>
       <div class="w-full mb-8">
         <input
@@ -88,10 +88,23 @@ export default {
     };
   },
   computed: {
-    isWarm() {
-      return (
-        typeof this.weather.main !== "undefined" && this.weather.main.temp > 16
-      );
+    temperatureClass() {
+      if (typeof this.weather.main !== "undefined") {
+        const temp = this.weather.main.temp;
+        switch (true) {
+          case temp <= 0:
+            return "freezing";
+          case temp > 0 && temp <= 16:
+            return "cool";
+          case temp > 16 && temp <=22:
+            return "warm";
+          case temp > 22:
+            return "hot";
+          default:
+            return "app";
+        }
+      }
+      return "";
     },
     additionalDetails() {
       return {
@@ -210,14 +223,26 @@ body {
 }
 
 #app {
-  background-image: url("./assets/cold-bg.jpg");
+  background-image: url("./assets/app.jpg");
   background-size: cover;
   background-position: bottom;
   transition: 0.4s;
 }
 
 #app.warm {
-  background-image: url("./assets/warm-bg.jpg");
+  background-image: url("./assets/warm.jpg");
+}
+
+#app.cool {
+  background-image: url("./assets/cool.jpg");
+}
+
+#app.freezing {
+  background-image: url("./assets/freezing.jpg");
+}
+
+#app.hot {
+  background-image: url("./assets/hot.jpg");
 }
 
 main {
