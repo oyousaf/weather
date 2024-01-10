@@ -92,16 +92,16 @@ export default {
       if (typeof this.weather.main !== "undefined") {
         const temp = this.weather.main.temp;
         switch (true) {
-          case temp <= 0:
+          case temp <= 3:
             return "freezing";
-          case temp > 0 && temp <= 16:
+          case temp > 3 && temp <= 16:
             return "cool";
-          case temp > 16 && temp <=22:
+          case temp > 16 && temp <= 24:
             return "warm";
-          case temp > 22:
+          case temp > 24:
             return "hot";
           default:
-            return "app";
+            return "";
         }
       }
       return "";
