@@ -94,14 +94,12 @@ export default {
         switch (true) {
           case temp <= 3:
             return "freezing";
-          case temp > 3 && temp <= 16:
+          case temp <= 16:
             return "cool";
-          case temp > 16 && temp <= 24:
+          case temp <= 24:
             return "warm";
-          case temp > 24:
-            return "hot";
           default:
-            return "";
+            return "hot";
         }
       }
       return "";
