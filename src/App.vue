@@ -19,7 +19,7 @@
         <!-- Location and Date -->
         <div class="mb-4">
           <h1 class="text-3xl font-medium drop-shadow-md">{{ location }}</h1>
-          <p class="text-2xl font-light italic drop-shadow-lg">
+          <p class="text-2xl mt-2 font-light italic drop-shadow-lg">
             {{ currentDate }}
           </p>
         </div>
