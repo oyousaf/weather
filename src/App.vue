@@ -34,7 +34,7 @@
         <!-- Toggle Units Button -->
         <button
           @click="toggleUnits"
-          class="flex uppercase mx-auto m-4 p-2 font-bold bg-teal-700 shadow-teal-700 rounded-md hover:bg-teal-500 transition-all duration-300"
+          class="flex uppercase text-2xl mx-auto m-4 p-2 font-bold bg-teal-700 shadow-teal-700 rounded-md hover:bg-teal-500 transition-all duration-300"
         >
           {{ toggleButtonText }}
         </button>
