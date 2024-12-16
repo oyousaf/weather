@@ -1,3 +1,3 @@
-# Weather
+# Weather App
 
-A simple weather app created using Vue
+A simple weather app created using Vue 3.5
