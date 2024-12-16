@@ -1,6 +1,7 @@
 <template>
   <div id="app" :class="temperatureClass">
     <main class="items-center text-center">
+      <!-- Cotainer -->
       <div class="max-w-7xl mx-auto relative">
         <!-- Search Bar -->
         <div class="mb-8">
