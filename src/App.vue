@@ -2,7 +2,8 @@
   <div id="app" :class="temperatureClass">
     <main class="items-center text-center">
       <!-- Search Bar -->
-      <div class="max-w-7xl mx-auto mb-8">
+      <div class="max-w-7xl mx-auto relative">
+      <div class="mb-8">
         <input
           id="input"
           type="text"
@@ -15,7 +16,7 @@
       </div>
 
       <!-- Weather Display -->
-      <div v-if="weatherData.main" class="text-white max-w-7xl mx-auto mb-8">
+      <div v-if="weatherData.main" class="text-white">
         <!-- Location and Date -->
         <div class="mb-4">
           <h1 class="text-3xl font-medium drop-shadow-md">{{ location }}</h1>
@@ -64,6 +65,7 @@
           </div>
         </div>
       </div>
+    </div>
     </main>
   </div>
 </template>
