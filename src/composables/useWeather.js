@@ -122,13 +122,34 @@ export function useWeather(apiKey) {
       : "";
   });
 
+  function convertWindDirection(degrees) {
+    const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+    return degrees !== undefined
+      ? directions[Math.round(degrees / 45) % 8]
+      : "N/A";
+  }
+
+  function formatTime(timestamp) {
+    if (!timestamp) return "N/A";
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
   const weatherDetailsObject = computed(() => ({
     "Feels Like": formattedTemperature.value,
+    "Min Temp": `${Math.round(weatherData.value.main?.temp_min)}°C`,
+    "Max Temp": `${Math.round(weatherData.value.main?.temp_max)}°C`,
     Humidity: `${weatherData.value.main?.humidity}%`,
     Winds: `${weatherData.value.wind?.speed.toFixed(0)} MPH`,
+    "Wind Direction": `${convertWindDirection(weatherData.value.wind?.deg)}`,
     Pressure: `${weatherData.value.main?.pressure} hPa`,
-    Visibility: `${((weatherData.value.visibility / 1000) * 0.621371).toFixed(1)} miles`,
+    Visibility: `${((weatherData.value.visibility / 1000) * 0.621371).toFixed(
+      1
+    )} miles`,
+    Sunrise: formatTime(weatherData.value.sys?.sunrise),
+    Sunset: formatTime(weatherData.value.sys?.sunset),
   }));
+
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       fetchWeather();

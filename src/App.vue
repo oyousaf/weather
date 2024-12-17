@@ -48,7 +48,7 @@
                 :src="weatherIconUrl"
                 alt="Weather Icon"
                 v-if="weatherCondition"
-                class="mx-auto mt-8 w-32 h-32"
+                class="mx-auto w-32 h-32"
               />
             </transition>
             {{ weatherCondition }}
