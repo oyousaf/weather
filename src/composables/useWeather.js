@@ -22,12 +22,13 @@ export function useWeather(apiKey) {
 
   const debounceFetchWeather = useDebounceFn(fetchWeather, 1500);
 
-  const formattedTemperature = computed(() => {
-    const temp = weatherData.value.main?.temp;
-    return temperatureUnit.value === "Celsius"
-      ? `${Math.round(temp)}°C`
-      : `${((temp * 9) / 5 + 32).toFixed(0)}°F`;
-  });
+  const formattedTemperature = (temp) => {
+  if (!temp) return "N/A";
+  return temperatureUnit.value === "Celsius"
+    ? `${Math.round(temp)}°C`
+    : `${((temp * 9) / 5 + 32).toFixed(0)}°F`;
+};
+
 
   const toggleUnits = () => {
     temperatureUnit.value =
@@ -136,9 +137,9 @@ export function useWeather(apiKey) {
   }
 
   const weatherDetailsObject = computed(() => ({
-    "Feels Like": formattedTemperature.value,
-    "Min Temp": `${Math.round(weatherData.value.main?.temp_min)}°C`,
-    "Max Temp": `${Math.round(weatherData.value.main?.temp_max)}°C`,
+    "Feels Like": formattedTemperature(weatherData.value.main?.feels_like),
+    "Min Temp": formattedTemperature(weatherData.value.main?.temp_min),
+    "Max Temp": formattedTemperature(weatherData.value.main?.temp_max),
     Humidity: `${weatherData.value.main?.humidity}%`,
     Winds: `${weatherData.value.wind?.speed.toFixed(0)} MPH`,
     "Wind Direction": `${convertWindDirection(weatherData.value.wind?.deg)}`,

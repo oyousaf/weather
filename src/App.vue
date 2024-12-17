@@ -30,7 +30,7 @@
           <div
             class="inline-block items-center justify-center p-4 text-7xl font-bold drop-shadow-lg bg-white/25 rounded-2xl my-8 shadow-lg"
           >
-            {{ formattedTemperature }}
+            {{ formattedTemperature(weatherData.main?.temp) }}
           </div>
 
           <!-- Toggle Units Button -->
