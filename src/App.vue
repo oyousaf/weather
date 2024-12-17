@@ -62,7 +62,7 @@
 
           <!-- Additional Weather Details -->
           <div
-            className="grid md:grid-cols-5 grid-cols-3 gap-4 text-center mt-8"
+            className="grid md:grid-cols-5 grid-cols-2 gap-4 text-center mt-8"
           >
             <div
               v-for="(detail, label) in weatherDetailsObject"
