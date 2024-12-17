@@ -80,7 +80,7 @@ export function useWeather(apiKey) {
       hour: "2-digit",
       minute: "2-digit",
     });
-  
+
     return `${days[d.getDay()]} ${d.getDate()} ${
       months[d.getMonth()]
     } ${d.getFullYear()} ${timeWithoutSeconds}`;
@@ -127,9 +127,8 @@ export function useWeather(apiKey) {
     Humidity: `${weatherData.value.main?.humidity}%`,
     Winds: `${weatherData.value.wind?.speed.toFixed(0)} MPH`,
     Pressure: `${weatherData.value.main?.pressure} hPa`,
-    Visibility: `${weatherData.value.visibility / 1000} km`,
+    Visibility: `${((weatherData.value.visibility / 1000) * 0.621371).toFixed(1)} miles`,
   }));
-
   const handleKeyPress = (event) => {
     if (event.key === "Enter") {
       fetchWeather();

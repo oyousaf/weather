@@ -52,6 +52,12 @@
               />
             </transition>
             {{ weatherCondition }}
+            <div
+              v-if="weatherData.clouds?.all"
+              class="text-2xl font-light mt-2"
+            >
+              {{ weatherData.clouds.all }}%
+            </div>
           </div>
 
           <!-- Additional Weather Details -->
