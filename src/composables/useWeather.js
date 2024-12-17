@@ -73,14 +73,17 @@ export function useWeather(apiKey) {
       "Saturday",
     ];
 
-    // Get the timezone offset (seconds from UTC)
     const timezoneOffset = weatherData.value.timezone || 0;
-    // Convert the UTC timestamp to local time
     const d = new Date((weatherData.value.dt + timezoneOffset) * 1000);
 
+    const timeWithoutSeconds = d.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  
     return `${days[d.getDay()]} ${d.getDate()} ${
       months[d.getMonth()]
-    } ${d.getFullYear()} ${d.toLocaleTimeString()}`;
+    } ${d.getFullYear()} ${timeWithoutSeconds}`;
   });
 
   const toggleButtonText = computed(() =>
