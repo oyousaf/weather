@@ -6,13 +6,15 @@
       temperatureClass,
     ]"
   >
-    <main class="flex flex-col items-center justify-start px-4 py-10 text-white font-sans">
+    <main
+      class="flex flex-col items-center justify-start px-4 py-10 text-white font-sans"
+    >
       <!-- Search -->
       <div class="w-full max-w-2xl mb-8">
         <input
           v-model="query"
           @input="debounceFetchWeather"
-          @keypress="handleKeyPress"
+          @keydown.enter="handleKeyPress"
           type="text"
           placeholder="Search for a city..."
           class="w-full p-4 text-lg text-center text-black rounded-2xl bg-white/60 backdrop-blur-sm shadow-xl placeholder:text-gray-700 focus:outline-none focus:ring-4 focus:ring-white transition"
@@ -32,11 +34,13 @@
         </header>
 
         <!-- Icon & Condition -->
-        <div class="flex flex-col md:flex-row items-center justify-center gap-6">
+        <div
+          class="flex flex-col md:flex-row items-center justify-center gap-6"
+        >
           <div class="flex flex-col items-center space-y-2">
             <img
-              v-if="amchartsIconUrl"
-              :src="amchartsIconUrl"
+              v-if="weatherIconUrl"
+              :src="weatherIconUrl"
               :alt="weatherCondition"
               class="w-32 h-32 drop-shadow-lg"
             />
@@ -67,13 +71,17 @@
         </div>
 
         <!-- Details -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mt-6 text-center">
+        <div
+          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mt-6 text-center"
+        >
           <div
             v-for="(value, label) in weatherDetailsObject"
             :key="label"
             class="flex flex-col items-center justify-center p-4 bg-white/10 backdrop-blur-sm rounded-2xl shadow-lg hover:scale-105 transition-all"
           >
-            <div class="text-sm text-teal-200 uppercase font-semibold">{{ label }}</div>
+            <div class="text-sm text-teal-200 uppercase font-semibold">
+              {{ label }}
+            </div>
             <div class="text-lg font-bold mt-1">{{ value }}</div>
           </div>
         </div>
@@ -84,7 +92,6 @@
 
 <script>
 import { useWeather } from "./composables/useWeather";
-import { computed } from "vue";
 
 export default {
   name: "App",
@@ -104,30 +111,8 @@ export default {
       weatherDetails,
       weatherDetailsObject,
       handleKeyPress,
+      weatherIconUrl,
     } = useWeather();
-
-    const amchartsIconUrl = computed(() => {
-      const condition = weatherCondition.value.toLowerCase();
-      const iconMap = {
-        clear: "clear-day",
-        clouds: "cloudy",
-        rain: "rainy",
-        drizzle: "showers",
-        snow: "snowy",
-        thunderstorm: "thunder",
-        mist: "mist",
-        haze: "haze",
-        fog: "foggy",
-        smoke: "smoky",
-        dust: "dust",
-        sand: "sand",
-        ash: "volcanic",
-        squall: "windy",
-        tornado: "tornado",
-      };
-      const iconName = iconMap[condition] || "na";
-      return `/icons/animated/${iconName}.svg`;
-    });
 
     return {
       query,
@@ -144,7 +129,7 @@ export default {
       weatherDetails,
       weatherDetailsObject,
       handleKeyPress,
-      amchartsIconUrl,
+      weatherIconUrl,
     };
   },
 };

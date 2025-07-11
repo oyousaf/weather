@@ -7,31 +7,84 @@ export function useWeather() {
   const temperatureUnit = ref("Celsius");
 
   const iconMap = {
-    Clear: "clear-day",
-    Clouds: "cloudy",
-    Rain: "rainy",
-    Drizzle: "showers",
-    Thunderstorm: "thunder",
-    Snow: "snowy",
-    Mist: "foggy",
-    Fog: "foggy",
-    Haze: "foggy",
-    Dust: "foggy",
-    Smoke: "foggy",
-    Ash: "foggy",
-    Squall: "windy",
-    Tornado: "windy",
+    // CLEAR
+    "Clear:clear sky": "day",
+
+    // CLOUDS
+    "Clouds:few clouds": "cloudy-day-1",
+    "Clouds:scattered clouds": "cloudy-day-2",
+    "Clouds:broken clouds": "cloudy-day-3",
+    "Clouds:overcast clouds": "cloudy",
+
+    // RAIN
+    "Rain:light rain": "rainy-1",
+    "Rain:moderate rain": "rainy-2",
+    "Rain:heavy intensity rain": "rainy-3",
+    "Rain:very heavy rain": "rainy-4",
+    "Rain:extreme rain": "rainy-5",
+    "Rain:freezing rain": "rainy-6",
+    "Rain:light intensity shower rain": "rainy-2",
+    "Rain:shower rain": "rainy-3",
+    "Rain:heavy intensity shower rain": "rainy-5",
+    "Rain:ragged shower rain": "rainy-6",
+
+    // DRIZZLE
+    "Drizzle:light intensity drizzle": "rainy-1",
+    "Drizzle:drizzle": "rainy-2",
+    "Drizzle:heavy intensity drizzle": "rainy-3",
+    "Drizzle:light intensity drizzle rain": "rainy-1",
+    "Drizzle:drizzle rain": "rainy-2",
+    "Drizzle:heavy intensity drizzle rain": "rainy-3",
+    "Drizzle:shower drizzle": "rainy-2",
+
+    // SNOW
+    "Snow:light snow": "snowy-1",
+    "Snow:snow": "snowy-2",
+    "Snow:heavy snow": "snowy-3",
+    "Snow:sleet": "snowy-4",
+    "Snow:light shower sleet": "snowy-5",
+    "Snow:shower sleet": "snowy-6",
+    "Snow:light rain and snow": "snowy-1",
+    "Snow:rain and snow": "snowy-2",
+    "Snow:light shower snow": "snowy-3",
+    "Snow:shower snow": "snowy-4",
+    "Snow:heavy shower snow": "snowy-5",
+
+    // THUNDERSTORM
+    "Thunderstorm:thunderstorm": "thunder",
+    "Thunderstorm:thunderstorm with light rain": "thunder",
+    "Thunderstorm:thunderstorm with rain": "thunder",
+    "Thunderstorm:thunderstorm with heavy rain": "thunder",
+    "Thunderstorm:light thunderstorm": "thunder",
+    "Thunderstorm:heavy thunderstorm": "thunder",
+    "Thunderstorm:ragged thunderstorm": "thunder",
+    "Thunderstorm:thunderstorm with light drizzle": "thunder",
+    "Thunderstorm:thunderstorm with drizzle": "thunder",
+    "Thunderstorm:thunderstorm with heavy drizzle": "thunder",
+
+    // ATMOSPHERE
+    "Mist:mist": "foggy",
+    "Smoke:smoke": "foggy",
+    "Haze:haze": "foggy",
+    "Dust:dust": "foggy",
+    "Fog:fog": "foggy",
+    "Sand:sand": "foggy",
+    "Ash:volcanic ash": "foggy",
+    "Squall:squall": "windy",
+    "Tornado:tornado": "windy",
   };
 
   const weatherIconUrl = computed(() => {
-    const condition = weatherData.value.weather?.[0]?.main;
-    const iconName = iconMap[condition] || "na";
+    const main = weatherData.value.weather?.[0]?.main || "";
+    const description =
+      weatherData.value.weather?.[0]?.description?.toLowerCase() || "";
+    const key = `${main}:${description}`;
+    const iconName = iconMap[key] || "na";
     return `/icons/animated/${iconName}.svg`;
   });
 
   const fetchWeather = async () => {
     if (!query.value.trim()) return;
-
     try {
       const response = await fetch(
         `/api/weather?city=${encodeURIComponent(query.value.trim())}`
@@ -76,7 +129,6 @@ export function useWeather() {
     const dt = weatherData.value.dt;
     const offset = weatherData.value.timezone || 0;
     if (!dt) return "";
-
     const localTime = new Date((dt + offset) * 1000);
     return localTime.toLocaleString("en-GB", {
       weekday: "long",
