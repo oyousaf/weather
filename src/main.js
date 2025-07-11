@@ -8,7 +8,8 @@ const app = createApp(App);
 
 app.use(MotionPlugin);
 app.use(VueFlags, {
-  useSvg: true,
+  cdn: true,    
+  useSvg: true, 
 });
 
 app.mount("#app");

@@ -99,13 +99,9 @@
 
 <script>
 import { useWeather } from "./composables/useWeather";
-import { VFlag } from "vue-flags";
 
 export default {
   name: "App",
-  components: {
-    VFlag,
-  },
   setup() {
     return useWeather();
   },
