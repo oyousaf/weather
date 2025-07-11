@@ -6,9 +6,7 @@
       temperatureClass,
     ]"
   >
-    <main
-      class="flex flex-col items-center justify-start px-4 py-10 text-white font-sans"
-    >
+    <main class="flex flex-col items-center justify-start px-4 py-10 text-white font-sans">
       <!-- Search -->
       <div class="w-full max-w-2xl mb-8">
         <input
@@ -22,7 +20,7 @@
         />
       </div>
 
-      <!-- Main Weather Card -->
+      <!-- Weather Display -->
       <section
         v-if="weatherData.main"
         class="glassmorphic-card w-full max-w-5xl text-white p-8 rounded-3xl shadow-2xl space-y-6"
@@ -33,15 +31,13 @@
           <p class="text-lg font-light">{{ currentDate }}</p>
         </header>
 
-        <!-- Temperature & Condition -->
-        <div
-          class="flex flex-col md:flex-row items-center justify-center gap-6"
-        >
+        <!-- Icon & Condition -->
+        <div class="flex flex-col md:flex-row items-center justify-center gap-6">
           <div class="flex flex-col items-center space-y-2">
             <img
-              v-if="weatherIconUrl"
-              :src="weatherIconUrl"
-              alt="Weather Icon"
+              v-if="amchartsIconUrl"
+              :src="amchartsIconUrl"
+              :alt="weatherCondition"
               class="w-32 h-32 drop-shadow-lg"
             />
             <p class="text-3xl font-semibold italic">{{ weatherCondition }}</p>
@@ -64,24 +60,20 @@
         <div class="flex justify-center">
           <button
             @click="toggleUnits"
-            class="uppercase px-6 py-2 bg-teal-600 hover:bg-teal-400 text-white font-semibold tracking-wider rounded-full transition-all shadow-md"
+            class="uppercase px-6 py-2 bg-teal-600 hover:bg-teal-400 text-white font-semibold tracking-wider rounded-full transition-all shadow"
           >
             Switch to {{ toggleButtonText }}
           </button>
         </div>
 
-        <!-- Details Grid -->
-        <div
-          class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mt-6 text-center"
-        >
+        <!-- Details -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mt-6 text-center">
           <div
             v-for="(value, label) in weatherDetailsObject"
             :key="label"
             class="flex flex-col items-center justify-center p-4 bg-white/10 backdrop-blur-sm rounded-2xl shadow-lg hover:scale-105 transition-all"
           >
-            <div class="text-sm text-teal-200 uppercase font-semibold">
-              {{ label }}
-            </div>
+            <div class="text-sm text-teal-200 uppercase font-semibold">{{ label }}</div>
             <div class="text-lg font-bold mt-1">{{ value }}</div>
           </div>
         </div>
@@ -92,6 +84,7 @@
 
 <script>
 import { useWeather } from "./composables/useWeather";
+import { computed } from "vue";
 
 export default {
   name: "App",
@@ -107,13 +100,34 @@ export default {
       debounceFetchWeather,
       toggleButtonText,
       weatherCondition,
-      weatherConditionClass,
       shouldShowWeatherDetails,
       weatherDetails,
       weatherDetailsObject,
-      weatherIconUrl,
       handleKeyPress,
     } = useWeather();
+
+    const amchartsIconUrl = computed(() => {
+      const condition = weatherCondition.value.toLowerCase();
+      const iconMap = {
+        clear: "clear-day",
+        clouds: "cloudy",
+        rain: "rainy",
+        drizzle: "showers",
+        snow: "snowy",
+        thunderstorm: "thunder",
+        mist: "mist",
+        haze: "haze",
+        fog: "foggy",
+        smoke: "smoky",
+        dust: "dust",
+        sand: "sand",
+        ash: "volcanic",
+        squall: "windy",
+        tornado: "tornado",
+      };
+      const iconName = iconMap[condition] || "na";
+      return `/icons/animated/${iconName}.svg`;
+    });
 
     return {
       query,
@@ -126,12 +140,11 @@ export default {
       debounceFetchWeather,
       toggleButtonText,
       weatherCondition,
-      weatherConditionClass,
       shouldShowWeatherDetails,
       weatherDetails,
       weatherDetailsObject,
-      weatherIconUrl,
       handleKeyPress,
+      amchartsIconUrl,
     };
   },
 };

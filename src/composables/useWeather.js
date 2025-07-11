@@ -6,6 +6,29 @@ export function useWeather() {
   const weatherData = ref({});
   const temperatureUnit = ref("Celsius");
 
+  const iconMap = {
+    Clear: "clear-day",
+    Clouds: "cloudy",
+    Rain: "rainy",
+    Drizzle: "showers",
+    Thunderstorm: "thunder",
+    Snow: "snowy",
+    Mist: "foggy",
+    Fog: "foggy",
+    Haze: "foggy",
+    Dust: "foggy",
+    Smoke: "foggy",
+    Ash: "foggy",
+    Squall: "windy",
+    Tornado: "windy",
+  };
+
+  const weatherIconUrl = computed(() => {
+    const condition = weatherData.value.weather?.[0]?.main;
+    const iconName = iconMap[condition] || "na";
+    return `/icons/animated/${iconName}.svg`;
+  });
+
   const fetchWeather = async () => {
     if (!query.value.trim()) return;
 
@@ -16,10 +39,7 @@ export function useWeather() {
       const result = await response.json();
       weatherData.value = result;
     } catch (error) {
-      console.error(
-        "Error fetching weather data from serverless function:",
-        error
-      );
+      console.error("Error fetching weather data:", error);
     }
   };
 
@@ -99,11 +119,6 @@ export function useWeather() {
     if (condition === "Clouds")
       return `${weatherData.value.clouds?.all ?? "N/A"}%`;
     return "";
-  });
-
-  const weatherIconUrl = computed(() => {
-    const icon = weatherData.value.weather?.[0]?.icon;
-    return icon ? `https://openweathermap.org/img/wn/${icon}@4x.png` : "";
   });
 
   const convertWindDirection = (deg) => {
