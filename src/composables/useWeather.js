@@ -74,12 +74,25 @@ export function useWeather() {
     "Tornado:tornado": "windy",
   };
 
+  const isDaytime = computed(() => {
+    const now = weatherData.value.dt;
+    const sunrise = weatherData.value.sys?.sunrise;
+    const sunset = weatherData.value.sys?.sunset;
+    return now && sunrise && sunset ? now >= sunrise && now < sunset : true;
+  });
+
   const weatherIconUrl = computed(() => {
     const main = weatherData.value.weather?.[0]?.main || "";
     const description =
       weatherData.value.weather?.[0]?.description?.toLowerCase() || "";
     const key = `${main}:${description}`;
-    const iconName = iconMap[key] || "na";
+    let iconName = iconMap[key] || "na";
+
+    // Apply day/night version if relevant
+    if (!isDaytime.value && iconName.includes("day")) {
+      iconName = iconName.replace("day", "night");
+    }
+
     return `/icons/animated/${iconName}.svg`;
   });
 
@@ -91,9 +104,7 @@ export function useWeather() {
           query.value.trim()
         )}`,
         {
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           mode: "cors",
         }
       );
