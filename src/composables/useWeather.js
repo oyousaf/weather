@@ -87,7 +87,15 @@ export function useWeather() {
     if (!query.value.trim()) return;
     try {
       const response = await fetch(
-        `/api/weather?city=${encodeURIComponent(query.value.trim())}`
+        `https://weather-rose-chi.vercel.app/api/weather?city=${encodeURIComponent(
+          query.value.trim()
+        )}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          mode: "cors",
+        }
       );
       const result = await response.json();
       weatherData.value = result;

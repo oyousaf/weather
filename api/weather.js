@@ -1,4 +1,14 @@
 export default async function handler(req, res) {
+  // CORS headers
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+  // Handle CORS preflight
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
+
   const apiKey = process.env.OPENWEATHER_API_KEY;
   const { city } = req.query;
 
@@ -18,9 +28,9 @@ export default async function handler(req, res) {
       return res.status(data.cod).json({ error: data.message });
     }
 
-    res.status(200).json(data);
+    return res.status(200).json(data);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 }
