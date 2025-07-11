@@ -6,9 +6,7 @@
       temperatureClass,
     ]"
   >
-    <main
-      class="flex flex-col items-center justify-start px-4 py-10 text-white font-sans"
-    >
+    <main class="flex flex-col items-center px-4 py-10 text-white font-sans">
       <!-- Search -->
       <div class="w-full max-w-2xl mb-8">
         <input
@@ -25,11 +23,18 @@
       <!-- Weather Display -->
       <section
         v-if="weatherData.main"
-        class="glassmorphic-card w-full max-w-5xl text-white p-8 rounded-3xl shadow-2xl space-y-6"
+        class="glassmorphic-card w-full max-w-5xl p-8 rounded-3xl shadow-2xl space-y-6"
       >
         <!-- Location & Date -->
         <header class="text-center space-y-1">
-          <h1 class="text-4xl font-bold tracking-wide">{{ location }}</h1>
+          <div class="flex justify-center items-center gap-2">
+            <span class="text-4xl font-bold tracking-wide">{{ location }}</span>
+            <span
+              v-if="countryCode"
+              :class="`fi fi-${countryCode.toLowerCase()}`"
+              class="text-2xl"
+            ></span>
+          </div>
           <p class="text-lg font-light">{{ currentDate }}</p>
         </header>
 
@@ -96,41 +101,7 @@ import { useWeather } from "./composables/useWeather";
 export default {
   name: "App",
   setup() {
-    const {
-      query,
-      weatherData,
-      formattedTemperature,
-      location,
-      currentDate,
-      temperatureClass,
-      toggleUnits,
-      debounceFetchWeather,
-      toggleButtonText,
-      weatherCondition,
-      shouldShowWeatherDetails,
-      weatherDetails,
-      weatherDetailsObject,
-      handleKeyPress,
-      weatherIconUrl,
-    } = useWeather();
-
-    return {
-      query,
-      weatherData,
-      formattedTemperature,
-      location,
-      currentDate,
-      temperatureClass,
-      toggleUnits,
-      debounceFetchWeather,
-      toggleButtonText,
-      weatherCondition,
-      shouldShowWeatherDetails,
-      weatherDetails,
-      weatherDetailsObject,
-      handleKeyPress,
-      weatherIconUrl,
-    };
+    return useWeather();
   },
 };
 </script>

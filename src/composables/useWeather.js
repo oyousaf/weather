@@ -1,3 +1,4 @@
+// src/composables/useWeather.js
 import { ref, computed } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 
@@ -7,16 +8,11 @@ export function useWeather() {
   const temperatureUnit = ref("Celsius");
 
   const iconMap = {
-    // CLEAR
     "Clear:clear sky": "day",
-
-    // CLOUDS
     "Clouds:few clouds": "cloudy-day-1",
     "Clouds:scattered clouds": "cloudy-day-2",
     "Clouds:broken clouds": "cloudy-day-3",
     "Clouds:overcast clouds": "cloudy",
-
-    // RAIN
     "Rain:light rain": "rainy-1",
     "Rain:moderate rain": "rainy-2",
     "Rain:heavy intensity rain": "rainy-3",
@@ -27,8 +23,6 @@ export function useWeather() {
     "Rain:shower rain": "rainy-3",
     "Rain:heavy intensity shower rain": "rainy-5",
     "Rain:ragged shower rain": "rainy-6",
-
-    // DRIZZLE
     "Drizzle:light intensity drizzle": "rainy-1",
     "Drizzle:drizzle": "rainy-2",
     "Drizzle:heavy intensity drizzle": "rainy-3",
@@ -36,8 +30,6 @@ export function useWeather() {
     "Drizzle:drizzle rain": "rainy-2",
     "Drizzle:heavy intensity drizzle rain": "rainy-3",
     "Drizzle:shower drizzle": "rainy-2",
-
-    // SNOW
     "Snow:light snow": "snowy-1",
     "Snow:snow": "snowy-2",
     "Snow:heavy snow": "snowy-3",
@@ -49,8 +41,6 @@ export function useWeather() {
     "Snow:light shower snow": "snowy-3",
     "Snow:shower snow": "snowy-4",
     "Snow:heavy shower snow": "snowy-5",
-
-    // THUNDERSTORM
     "Thunderstorm:thunderstorm": "thunder",
     "Thunderstorm:thunderstorm with light rain": "thunder",
     "Thunderstorm:thunderstorm with rain": "thunder",
@@ -61,8 +51,6 @@ export function useWeather() {
     "Thunderstorm:thunderstorm with light drizzle": "thunder",
     "Thunderstorm:thunderstorm with drizzle": "thunder",
     "Thunderstorm:thunderstorm with heavy drizzle": "thunder",
-
-    // ATMOSPHERE
     "Mist:mist": "foggy",
     "Smoke:smoke": "foggy",
     "Haze:haze": "foggy",
@@ -87,12 +75,9 @@ export function useWeather() {
       weatherData.value.weather?.[0]?.description?.toLowerCase() || "";
     const key = `${main}:${description}`;
     let iconName = iconMap[key] || "na";
-
-    // Apply day/night version if relevant
     if (!isDaytime.value && iconName.includes("day")) {
       iconName = iconName.replace("day", "night");
     }
-
     return `/icons/animated/${iconName}.svg`;
   });
 
@@ -143,6 +128,8 @@ export function useWeather() {
     const country = weatherData.value.sys?.country || "";
     return name && country ? `${name}, ${country}` : name || country || "—";
   });
+
+  const countryCode = computed(() => weatherData.value.sys?.country || "");
 
   const currentDate = computed(() => {
     const dt = weatherData.value.dt;
@@ -237,6 +224,7 @@ export function useWeather() {
     weatherData,
     formattedTemperature,
     location,
+    countryCode,
     currentDate,
     temperatureClass,
     toggleUnits,
