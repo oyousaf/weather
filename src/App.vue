@@ -7,7 +7,7 @@
     ]"
   >
     <main class="flex flex-col items-center px-4 py-10 text-white font-sans">
-      <!-- Search -->
+      <!-- Search Bar -->
       <div class="w-full max-w-2xl mb-8">
         <input
           v-model="query"
@@ -25,20 +25,21 @@
         v-if="weatherData.main"
         class="glassmorphic-card w-full max-w-5xl p-8 rounded-3xl shadow-2xl space-y-6"
       >
-        <!-- Location & Date -->
+        <!-- Location + Flag + Date -->
         <header class="text-center space-y-1">
           <div class="flex justify-center items-center gap-2">
             <span class="text-4xl font-bold tracking-wide">{{ location }}</span>
-            <span
+            <v-flag
               v-if="countryCode"
-              :class="`fi fi-${countryCode.toLowerCase()}`"
-              class="text-2xl"
-            ></span>
+              :iso="countryCode.toLowerCase()"
+              class="w-8 h-6 rounded overflow-hidden shadow-md"
+              aria-label="Country flag"
+            />
           </div>
           <p class="text-lg font-light">{{ currentDate }}</p>
         </header>
 
-        <!-- Icon & Condition -->
+        <!-- Weather Icon & Description -->
         <div
           class="flex flex-col md:flex-row items-center justify-center gap-6"
         >
@@ -58,6 +59,7 @@
             </p>
           </div>
 
+          <!-- Temperature -->
           <div
             class="bg-white/20 backdrop-blur-md rounded-2xl p-8 text-6xl font-extrabold shadow-inner text-center"
           >
@@ -75,7 +77,7 @@
           </button>
         </div>
 
-        <!-- Details -->
+        <!-- Weather Details Grid -->
         <div
           class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mt-6 text-center"
         >
@@ -97,9 +99,13 @@
 
 <script>
 import { useWeather } from "./composables/useWeather";
+import { VFlag } from "vue-flags";
 
 export default {
   name: "App",
+  components: {
+    VFlag,
+  },
   setup() {
     return useWeather();
   },
