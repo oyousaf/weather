@@ -2,7 +2,7 @@
   <div
     id="app"
     :class="[
-      'min-h-screen bg-gradient-to-br from-blue-600 via-teal-700 to-indigo-800',
+      'min-h-screen bg-gradient-to-br from-teal-600 via-teal-700 to-teal-800',
       temperatureClass,
     ]"
   >
