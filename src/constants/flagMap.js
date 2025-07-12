@@ -177,6 +177,7 @@ import PL from "country-flag-icons/string/3x2/PL";
 import PM from "country-flag-icons/string/3x2/PM";
 import PN from "country-flag-icons/string/3x2/PN";
 import PR from "country-flag-icons/string/3x2/PR";
+import PS from "country-flag-icons/string/3x2/PS";
 import PT from "country-flag-icons/string/3x2/PT";
 import PW from "country-flag-icons/string/3x2/PW";
 import PY from "country-flag-icons/string/3x2/PY";
@@ -423,6 +424,7 @@ export const flagMap = {
   PM,
   PN,
   PR,
+  PS,
   PT,
   PW,
   PY,
