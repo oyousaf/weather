@@ -37,8 +37,7 @@
                 class="w-5 h-4 rounded-sm overflow-hidden"
               ></span>
               <span>
-                {{ city.name }}{{ city.state ? ", " + city.state : "" }},
-                {{ city.country }}
+                {{ city.name }}{{ city.state ? ", " + city.state : "" }}
               </span>
             </li>
           </ul>

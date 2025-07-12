@@ -1,8 +1,9 @@
 import { ref, computed } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import axios from "axios";
+import { flagMap } from "../constants/flagMap";
 
-export function useWeather() {
+export function useWeather(flagSetter = () => {}) {
   const query = ref("");
   const selectedLabel = ref("");
   const weatherData = ref({});
@@ -16,6 +17,15 @@ export function useWeather() {
   const recentSearches = ref(
     JSON.parse(localStorage.getItem("recentSearches") || "[]")
   );
+
+  const getFlagSvg = (code) => {
+    const svg = flagMap[code?.trim()?.toUpperCase()];
+    return svg
+      ? `<img src="data:image/svg+xml;base64,${btoa(
+          svg
+        )}" class="w-full h-full object-cover" />`
+      : "";
+  };
 
   const saveToRecentSearches = (cityObj) => {
     const entry = {
@@ -52,6 +62,11 @@ export function useWeather() {
       const res = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
       const result = await res.json();
       weatherData.value = result.cod === "404" ? {} : result;
+
+      // If successful and no selectedLabel, sync fallback flag
+      if (result.sys?.country && !selectedLabel.value) {
+        flagSetter(getFlagSvg(result.sys.country));
+      }
     } catch (err) {
       console.error("Weather fetch failed:", err);
       weatherData.value = {};
@@ -107,14 +122,18 @@ export function useWeather() {
   const debouncedFetchSuggestions = useDebounceFn(fetchSuggestions, 300);
 
   const selectCity = (city) => {
-    const label = `${city.name}${city.state ? ", " + city.state : ""}, ${
+    const fullLabel = `${city.name}${city.state ? ", " + city.state : ""}, ${
       city.country
     }`;
-    query.value = label;
-    selectedLabel.value = label;
+    selectedLabel.value = fullLabel;
+    query.value = fullLabel;
+
+    flagSetter(getFlagSvg(city.country));
+
     suggestions.value = [];
     showSuggestions.value = false;
     highlightedIndex.value = -1;
+
     saveToRecentSearches(city);
     fetchWeatherByCoords(city.lat, city.lon);
   };
@@ -149,6 +168,7 @@ export function useWeather() {
   const location = computed(
     () => selectedLabel.value || weatherData.value.name || "—"
   );
+
   const countryCode = computed(() => weatherData.value.sys?.country || "");
 
   const currentDate = computed(() => {
@@ -295,6 +315,7 @@ export function useWeather() {
 
   return {
     query,
+    selectedLabel,
     weatherData,
     formattedTemperature,
     location,
