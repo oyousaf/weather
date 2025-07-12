@@ -29,12 +29,12 @@
         <header class="text-center space-y-1">
           <div class="flex justify-center items-center gap-2">
             <span class="text-4xl font-bold tracking-wide">{{ location }}</span>
-            <v-flag
-              v-if="countryCode"
-              :iso="countryCode.toLowerCase()"
-              class="w-8 h-6 rounded overflow-hidden shadow-md"
+            <span
+              v-if="svgFlag"
+              class="w-8 h-6 shadow-md rounded overflow-hidden inline-block"
+              v-html="svgFlag"
               aria-label="Country flag"
-            />
+            ></span>
           </div>
           <p class="text-lg font-light">{{ currentDate }}</p>
         </header>
@@ -97,15 +97,31 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { useWeather } from "./composables/useWeather";
+import { useFlag } from "./composables/useFlag";
 
-export default {
-  name: "App",
-  setup() {
-    return useWeather();
-  },
-};
+// ✅ Destructure all refs from useWeather for template access
+const {
+  query,
+  weatherData,
+  formattedTemperature,
+  location,
+  countryCode,
+  currentDate,
+  temperatureClass,
+  toggleUnits,
+  debounceFetchWeather,
+  toggleButtonText,
+  weatherCondition,
+  shouldShowWeatherDetails,
+  weatherDetails,
+  weatherDetailsObject,
+  handleKeyPress,
+  weatherIconUrl,
+} = useWeather();
+
+const { svgFlag } = useFlag(countryCode);
 </script>
 
 <style scoped>
