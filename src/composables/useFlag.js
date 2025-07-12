@@ -15,7 +15,9 @@ export function useFlag(countryCodeRef) {
   `;
 
   watchEffect(() => {
-    const code = countryCodeRef.value?.toUpperCase();
+    const raw = countryCodeRef.value;
+    const code = raw?.trim()?.toUpperCase();
+
     if (!code) {
       svgFlag.value = fallback;
       return;
@@ -28,8 +30,11 @@ export function useFlag(countryCodeRef) {
 
     const svg = flagMap[code];
     if (svg) {
-      cache.set(code, svg);
-      svgFlag.value = svg;
+      const html = `<img src="data:image/svg+xml;base64,${btoa(
+        svg
+      )}" alt="${code} flag" class="w-full h-full object-cover" />`;
+      cache.set(code, html);
+      svgFlag.value = html;
     } else {
       svgFlag.value = fallback;
     }

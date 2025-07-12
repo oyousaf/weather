@@ -30,10 +30,16 @@
               v-for="(city, index) in suggestions"
               :key="index"
               @click="selectCity(city)"
-              class="px-4 py-2 hover:bg-teal-100 cursor-pointer transition"
+              class="px-4 py-2 hover:bg-teal-100 cursor-pointer transition flex items-center gap-2"
             >
-              {{ city.name }}, {{ city.state ? city.state + ", " : ""
-              }}{{ city.country }}
+              <span
+                v-html="getFlagSvg(city.country)"
+                class="w-5 h-4 rounded-sm overflow-hidden"
+              ></span>
+              <span>
+                {{ city.name }}{{ city.state ? ", " + city.state : "" }},
+                {{ city.country }}
+              </span>
             </li>
           </ul>
         </transition>
@@ -45,7 +51,6 @@
           v-if="isLoading"
           class="flex items-center gap-3 text-white text-lg font-medium tracking-wide my-6"
         >
-          <!-- Circular Spinner -->
           <svg
             class="animate-spin h-6 w-6 text-white"
             xmlns="http://www.w3.org/2000/svg"
@@ -59,12 +64,12 @@
               r="10"
               stroke="currentColor"
               stroke-width="4"
-            ></circle>
+            />
             <path
               class="opacity-75"
               fill="currentColor"
               d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-            ></path>
+            />
           </svg>
         </div>
       </transition>
@@ -78,9 +83,9 @@
           <!-- Location + Flag + Date -->
           <header class="text-center space-y-1">
             <div class="flex justify-center items-center gap-2">
-              <span class="text-4xl font-bold tracking-wide">{{
-                location
-              }}</span>
+              <span class="text-4xl font-bold tracking-wide">
+                {{ location }}
+              </span>
               <span
                 v-if="svgFlag"
                 class="w-10 h-7 rounded-md overflow-hidden shadow ring-1 ring-white/30 inline-flex items-center justify-center translate-y-[1px]"
@@ -157,7 +162,9 @@
 <script setup>
 import { useWeather } from "./composables/useWeather";
 import { useFlag } from "./composables/useFlag";
+import { flagMap } from "./constants/flagMap";
 
+// Weather state and helpers
 const {
   query,
   weatherData,
@@ -182,8 +189,10 @@ const {
   debouncedFetchSuggestions,
 } = useWeather();
 
+// Flag for the selected weather result
 const { svgFlag } = useFlag(countryCode);
 
+// Input + Suggestion Logic
 const onInput = () => {
   debounceFetchWeather();
   debouncedFetchSuggestions();
@@ -193,6 +202,16 @@ const handleBlur = () => {
   setTimeout(() => {
     showSuggestions.value = false;
   }, 150);
+};
+
+// Encode any flag to base64 img tag
+const getFlagSvg = (code) => {
+  const svg = flagMap[code?.trim()?.toUpperCase()];
+  return svg
+    ? `<img src="data:image/svg+xml;base64,${btoa(
+        svg
+      )}" class="w-full h-full object-cover" />`
+    : "";
 };
 </script>
 
