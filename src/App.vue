@@ -30,7 +30,7 @@
               v-for="(city, index) in suggestions"
               :key="index"
               @click="selectCity(city)"
-              class="px-4 py-2 hover:bg-teal-400 cursor-pointer transition"
+              class="px-4 py-2 hover:bg-teal-100 cursor-pointer transition"
             >
               {{ city.name }}, {{ city.state ? city.state + ", " : ""
               }}{{ city.country }}
@@ -155,9 +155,6 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-import axios from "axios";
-import { useDebounceFn } from "@vueuse/core";
 import { useWeather } from "./composables/useWeather";
 import { useFlag } from "./composables/useFlag";
 
@@ -180,43 +177,16 @@ const {
   weatherIconUrl,
   selectCity,
   isLoading,
+  suggestions,
+  showSuggestions,
+  debouncedFetchSuggestions,
 } = useWeather();
 
 const { svgFlag } = useFlag(countryCode);
 
-const suggestions = ref([]);
-const showSuggestions = ref(false);
-
-const fetchSuggestions = async () => {
-  const input = query.value.trim();
-  if (input.length < 2) {
-    suggestions.value = [];
-    showSuggestions.value = false;
-    return;
-  }
-
-  try {
-    const { data } = await axios.get(
-      `/api/suggest?query=${encodeURIComponent(input)}`
-    );
-    suggestions.value = data;
-    showSuggestions.value = true;
-
-    const only = data[0];
-    if (data.length === 1 && only.name.toLowerCase() === input.toLowerCase()) {
-      selectCity(only);
-    }
-  } catch (err) {
-    console.error("Autocomplete error:", err);
-    suggestions.value = [];
-  }
-};
-
-const debouncedCitySearch = useDebounceFn(fetchSuggestions, 300);
-
 const onInput = () => {
   debounceFetchWeather();
-  debouncedCitySearch();
+  debouncedFetchSuggestions();
 };
 
 const handleBlur = () => {

@@ -11,6 +11,37 @@ export function useWeather() {
 
   const suggestions = ref([]);
   const showSuggestions = ref(false);
+  const highlightedIndex = ref(-1);
+
+  const recentSearches = ref(
+    JSON.parse(localStorage.getItem("recentSearches") || "[]")
+  );
+
+  const saveToRecentSearches = (cityObj) => {
+    const entry = {
+      name: cityObj.name,
+      country: cityObj.country,
+      state: cityObj.state,
+      lat: cityObj.lat,
+      lon: cityObj.lon,
+    };
+
+    const key = `${entry.name}-${entry.country}`;
+    const existing = recentSearches.value.find(
+      (item) => `${item.name}-${item.country}` === key
+    );
+
+    if (!existing) {
+      recentSearches.value.unshift(entry);
+      if (recentSearches.value.length > 5) {
+        recentSearches.value.pop();
+      }
+      localStorage.setItem(
+        "recentSearches",
+        JSON.stringify(recentSearches.value)
+      );
+    }
+  };
 
   const fetchWeather = async () => {
     const city = query.value.trim();
@@ -59,6 +90,14 @@ export function useWeather() {
       );
       suggestions.value = data;
       showSuggestions.value = true;
+
+      const only = data[0];
+      if (
+        data.length === 1 &&
+        only.name.toLowerCase() === input.toLowerCase()
+      ) {
+        selectCity(only);
+      }
     } catch (err) {
       console.error("Autocomplete fetch failed:", err);
       suggestions.value = [];
@@ -66,6 +105,19 @@ export function useWeather() {
   };
 
   const debouncedFetchSuggestions = useDebounceFn(fetchSuggestions, 300);
+
+  const selectCity = (city) => {
+    const label = `${city.name}${city.state ? ", " + city.state : ""}, ${
+      city.country
+    }`;
+    query.value = label;
+    selectedLabel.value = label;
+    suggestions.value = [];
+    showSuggestions.value = false;
+    highlightedIndex.value = -1;
+    saveToRecentSearches(city);
+    fetchWeatherByCoords(city.lat, city.lon);
+  };
 
   const formattedTemperature = (temp) => {
     if (temp == null) return "N/A";
@@ -136,12 +188,6 @@ export function useWeather() {
     }
   });
 
-  const isDaytime = computed(() => {
-    const now = weatherData.value.dt;
-    const { sunrise, sunset } = weatherData.value.sys || {};
-    return now && sunrise && sunset ? now >= sunrise && now < sunset : true;
-  });
-
   const iconMap = {
     "Clear:Clear Sky": "day",
     "Clouds:Few Clouds": "cloudy-day-1",
@@ -167,6 +213,12 @@ export function useWeather() {
     "Tornado:Tornado": "windy",
     "Squall:Squall": "windy",
   };
+
+  const isDaytime = computed(() => {
+    const now = weatherData.value.dt;
+    const { sunrise, sunset } = weatherData.value.sys || {};
+    return now && sunrise && sunset ? now >= sunrise && now < sunset : true;
+  });
 
   const weatherIconUrl = computed(() => {
     const main = weatherData.value.weather?.[0]?.main || "";
@@ -220,23 +272,25 @@ export function useWeather() {
 
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
-      if (suggestions.value.length > 0) {
+      if (
+        highlightedIndex.value >= 0 &&
+        suggestions.value[highlightedIndex.value]
+      ) {
+        selectCity(suggestions.value[highlightedIndex.value]);
+      } else if (suggestions.value.length === 1) {
         selectCity(suggestions.value[0]);
       } else {
         debounceFetchWeather();
       }
+    } else if (e.key === "ArrowDown") {
+      if (highlightedIndex.value < suggestions.value.length - 1) {
+        highlightedIndex.value++;
+      }
+    } else if (e.key === "ArrowUp") {
+      if (highlightedIndex.value > 0) {
+        highlightedIndex.value--;
+      }
     }
-  };
-
-  const selectCity = (city) => {
-    const label = `${city.name}${city.state ? ", " + city.state : ""}, ${
-      city.country
-    }`;
-    query.value = label;
-    selectedLabel.value = label;
-    suggestions.value = [];
-    showSuggestions.value = false;
-    fetchWeatherByCoords(city.lat, city.lon);
   };
 
   return {
@@ -262,5 +316,7 @@ export function useWeather() {
     showSuggestions,
     fetchSuggestions,
     debouncedFetchSuggestions,
+    recentSearches,
+    highlightedIndex,
   };
 }
