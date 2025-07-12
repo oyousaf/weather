@@ -90,11 +90,7 @@ export function useWeather() {
     return "hot";
   });
 
-  const location = computed(() => {
-    const name = weatherData.value.name || "";
-    const country = weatherData.value.sys?.country || "";
-    return name && country ? `${name}, ${country}` : name || country || "—";
-  });
+  const location = computed(() => weatherData.value.name || "—");
 
   const countryCode = computed(() => weatherData.value.sys?.country || "");
 

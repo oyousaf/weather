@@ -31,7 +31,7 @@
             <span class="text-4xl font-bold tracking-wide">{{ location }}</span>
             <span
               v-if="svgFlag"
-              class="w-8 h-6 shadow-md rounded overflow-hidden inline-block"
+              class="w-10 h-7 rounded-md overflow-hidden shadow ring-1 ring-white/30 inline-flex items-center justify-center translate-y-[1px]"
               v-html="svgFlag"
               aria-label="Country flag"
             ></span>
