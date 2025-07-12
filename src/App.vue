@@ -11,6 +11,7 @@
       <div class="w-full max-w-2xl mb-8">
         <input
           v-model="query"
+          name="query"
           @input="debounceFetchWeather"
           @keydown.enter="handleKeyPress"
           type="text"
