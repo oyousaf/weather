@@ -15,7 +15,7 @@
           @keydown.enter="handleKeyPress"
           type="text"
           placeholder="Search for a city..."
-          class="w-full p-4 text-lg text-center text-black rounded-2xl bg-white/60 backdrop-blur-sm shadow-xl placeholder:text-gray-700 focus:outline-none focus:ring-4 focus:ring-white transition"
+          class="w-full p-4 text-lg text-center text-teal-700 rounded-2xl bg-white/60 backdrop-blur-sm shadow-xl placeholder:text-teal-800 focus:outline-none focus:ring-4 focus:ring-white transition"
           aria-label="Enter city name"
         />
       </div>
