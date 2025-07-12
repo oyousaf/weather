@@ -1,27 +1,28 @@
 export default async function handler(req, res) {
-  // CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // Handle CORS preflight
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
+  if (req.method === "OPTIONS") return res.status(200).end();
 
   const apiKey = process.env.OPENWEATHER_API_KEY;
-  const { city } = req.query;
+  const { city, lat, lon } = req.query;
 
-  if (!city) {
-    return res.status(400).json({ error: "City parameter is required" });
+  if (!apiKey) return res.status(500).json({ error: "Missing API key." });
+
+  let endpoint = "";
+  if (lat && lon) {
+    endpoint = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${apiKey}`;
+  } else if (city) {
+    endpoint = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
+      city
+    )}&units=metric&appid=${apiKey}`;
+  } else {
+    return res.status(400).json({ error: "City or coordinates required." });
   }
 
   try {
-    const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(
-        city
-      )}&units=metric&appid=${apiKey}`
-    );
+    const response = await fetch(endpoint);
     const data = await response.json();
 
     if (data.cod !== 200) {
@@ -30,7 +31,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json(data);
   } catch (err) {
-    console.error(err);
+    console.error("Weather proxy fetch error:", err);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 }

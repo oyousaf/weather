@@ -4,8 +4,10 @@ import axios from "axios";
 
 export function useWeather() {
   const query = ref("");
+  const selectedLabel = ref("");
   const weatherData = ref({});
   const temperatureUnit = ref("Celsius");
+  const isLoading = ref(false);
 
   const suggestions = ref([]);
   const showSuggestions = ref(false);
@@ -14,29 +16,35 @@ export function useWeather() {
     const city = query.value.trim();
     if (!city) return;
 
+    isLoading.value = true;
     try {
-      const res = await fetch(
-        `https://weather-rose-chi.vercel.app/api/weather?city=${encodeURIComponent(
-          city
-        )}`
-      );
+      const res = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
       const result = await res.json();
-
-      if (result.cod === "404") {
-        console.warn("City not found.");
-        weatherData.value = {};
-      } else {
-        weatherData.value = result;
-      }
+      weatherData.value = result.cod === "404" ? {} : result;
     } catch (err) {
       console.error("Weather fetch failed:", err);
       weatherData.value = {};
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  const fetchWeatherByCoords = async (lat, lon) => {
+    isLoading.value = true;
+    try {
+      const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
+      const result = await res.json();
+      weatherData.value = result.cod === "404" ? {} : result;
+    } catch (err) {
+      console.error("Weather fetch failed:", err);
+      weatherData.value = {};
+    } finally {
+      isLoading.value = false;
     }
   };
 
   const debounceFetchWeather = useDebounceFn(fetchWeather, 1500);
 
-  // Autocomplete suggestions via proxy API
   const fetchSuggestions = async () => {
     const input = query.value.trim();
     if (input.length < 2) {
@@ -86,7 +94,9 @@ export function useWeather() {
     return "hot";
   });
 
-  const location = computed(() => weatherData.value.name || "—");
+  const location = computed(
+    () => selectedLabel.value || weatherData.value.name || "—"
+  );
   const countryCode = computed(() => weatherData.value.sys?.country || "");
 
   const currentDate = computed(() => {
@@ -144,19 +154,9 @@ export function useWeather() {
     "Rain:Very Heavy Rain": "rainy-4",
     "Rain:Extreme Rain": "rainy-5",
     "Rain:Freezing Rain": "rainy-6",
-    "Rain:Light Intensity Shower Rain": "rainy-2",
     "Rain:Shower Rain": "rainy-3",
-    "Rain:Heavy Intensity Shower Rain": "rainy-5",
-    "Rain:Ragged Shower Rain": "rainy-6",
-    "Drizzle:Light Intensity Drizzle": "rainy-1",
     "Drizzle:Drizzle": "rainy-2",
-    "Drizzle:Heavy Intensity Drizzle": "rainy-3",
-    "Snow:Light Snow": "snowy-1",
     "Snow:Snow": "snowy-2",
-    "Snow:Heavy Snow": "snowy-3",
-    "Snow:Sleet": "snowy-4",
-    "Snow:Light Shower Sleet": "snowy-5",
-    "Snow:Shower Sleet": "snowy-6",
     "Thunderstorm:Thunderstorm": "thunder",
     "Mist:Mist": "foggy",
     "Fog:Fog": "foggy",
@@ -171,18 +171,14 @@ export function useWeather() {
   const weatherIconUrl = computed(() => {
     const main = weatherData.value.weather?.[0]?.main || "";
     const desc = weatherData.value.weather?.[0]?.description || "";
-
     const formattedDesc = desc
       .toLowerCase()
       .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase());
-
     const key = `${main}:${formattedDesc}`;
     let iconName = iconMap[key] || "na";
-
     if (!isDaytime.value && iconName.includes("day")) {
       iconName = iconName.replace("day", "night");
     }
-
     return iconName === "na" ? "" : `/icons/animated/${iconName}.svg`;
   });
 
@@ -233,10 +229,14 @@ export function useWeather() {
   };
 
   const selectCity = (city) => {
-    query.value = `${city.name}, ${city.country}`;
+    const label = `${city.name}${city.state ? ", " + city.state : ""}, ${
+      city.country
+    }`;
+    query.value = label;
+    selectedLabel.value = label;
     suggestions.value = [];
     showSuggestions.value = false;
-    debounceFetchWeather();
+    fetchWeatherByCoords(city.lat, city.lon);
   };
 
   return {
@@ -257,8 +257,7 @@ export function useWeather() {
     weatherIconUrl,
     handleKeyPress,
     selectCity,
-
-    // Autocomplete
+    isLoading,
     suggestions,
     showSuggestions,
     fetchSuggestions,
