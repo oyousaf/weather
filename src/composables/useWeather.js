@@ -1,4 +1,3 @@
-
 import { ref, computed } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 
@@ -6,6 +5,42 @@ export function useWeather() {
   const query = ref("");
   const weatherData = ref({});
   const temperatureUnit = ref("Celsius");
+
+  const iconMap = {
+    "Clear:Clear Sky": "day",
+    "Clouds:Few Clouds": "cloudy-day-1",
+    "Clouds:Scattered Clouds": "cloudy-day-2",
+    "Clouds:Broken Clouds": "cloudy-day-3",
+    "Clouds:Overcast Clouds": "cloudy",
+    "Rain:Light Rain": "rainy-1",
+    "Rain:Moderate Rain": "rainy-2",
+    "Rain:Heavy Intensity Rain": "rainy-3",
+    "Rain:Very Heavy Rain": "rainy-4",
+    "Rain:Extreme Rain": "rainy-5",
+    "Rain:Freezing Rain": "rainy-6",
+    "Rain:Light Intensity Shower Rain": "rainy-2",
+    "Rain:Shower Rain": "rainy-3",
+    "Rain:Heavy Intensity Shower Rain": "rainy-5",
+    "Rain:Ragged Shower Rain": "rainy-6",
+    "Drizzle:Light Intensity Drizzle": "rainy-1",
+    "Drizzle:Drizzle": "rainy-2",
+    "Drizzle:Heavy Intensity Drizzle": "rainy-3",
+    "Snow:Light Snow": "snowy-1",
+    "Snow:Snow": "snowy-2",
+    "Snow:Heavy Snow": "snowy-3",
+    "Snow:Sleet": "snowy-4",
+    "Snow:Light Shower Sleet": "snowy-5",
+    "Snow:Shower Sleet": "snowy-6",
+    "Thunderstorm:Thunderstorm": "thunder",
+    "Mist:Mist": "foggy",
+    "Fog:Fog": "foggy",
+    "Haze:Haze": "foggy",
+    "Dust:Dust": "foggy",
+    "Smoke:Smoke": "foggy",
+    "Ash:Volcanic Ash": "foggy",
+    "Tornado:Tornado": "windy",
+    "Squall:Squall": "windy",
+  };
 
   const fetchWeather = async () => {
     const city = query.value.trim();
@@ -21,7 +56,7 @@ export function useWeather() {
 
       if (result.cod === "404") {
         console.warn("City not found.");
-        weatherData.value = {}; // Reset on error
+        weatherData.value = {};
         return;
       }
 
@@ -100,6 +135,31 @@ export function useWeather() {
     return "";
   });
 
+  const isDaytime = computed(() => {
+    const now = weatherData.value.dt;
+    const sunrise = weatherData.value.sys?.sunrise;
+    const sunset = weatherData.value.sys?.sunset;
+    return now && sunrise && sunset ? now >= sunrise && now < sunset : true;
+  });
+
+  const weatherIconUrl = computed(() => {
+    const main = weatherData.value.weather?.[0]?.main || "";
+    const description = weatherData.value.weather?.[0]?.description || "";
+
+    const formattedDesc = description
+      .toLowerCase()
+      .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase());
+
+    const key = `${main}:${formattedDesc}`;
+    let iconName = iconMap[key] || "na";
+
+    if (!isDaytime.value && iconName.includes("day")) {
+      iconName = iconName.replace("day", "night");
+    }
+
+    return iconName === "na" ? "" : `/icons/animated/${iconName}.svg`;
+  });
+
   const weatherDetailsObject = computed(() => {
     const main = weatherData.value.main || {};
     const wind = weatherData.value.wind || {};
@@ -155,6 +215,7 @@ export function useWeather() {
     shouldShowWeatherDetails,
     weatherDetails,
     weatherDetailsObject,
+    weatherIconUrl,
     handleKeyPress,
   };
 }
