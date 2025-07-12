@@ -1,10 +1,136 @@
 import { ref, computed } from "vue";
 import { useDebounceFn } from "@vueuse/core";
+import axios from "axios";
 
 export function useWeather() {
   const query = ref("");
   const weatherData = ref({});
   const temperatureUnit = ref("Celsius");
+
+  const suggestions = ref([]);
+  const showSuggestions = ref(false);
+
+  const fetchWeather = async () => {
+    const city = query.value.trim();
+    if (!city) return;
+
+    try {
+      const res = await fetch(
+        `https://weather-rose-chi.vercel.app/api/weather?city=${encodeURIComponent(
+          city
+        )}`
+      );
+      const result = await res.json();
+
+      if (result.cod === "404") {
+        console.warn("City not found.");
+        weatherData.value = {};
+      } else {
+        weatherData.value = result;
+      }
+    } catch (err) {
+      console.error("Weather fetch failed:", err);
+      weatherData.value = {};
+    }
+  };
+
+  const debounceFetchWeather = useDebounceFn(fetchWeather, 1500);
+
+  // Autocomplete suggestions via proxy API
+  const fetchSuggestions = async () => {
+    const input = query.value.trim();
+    if (input.length < 2) {
+      suggestions.value = [];
+      showSuggestions.value = false;
+      return;
+    }
+
+    try {
+      const { data } = await axios.get(
+        `/api/suggest?query=${encodeURIComponent(input)}`
+      );
+      suggestions.value = data;
+      showSuggestions.value = true;
+    } catch (err) {
+      console.error("Autocomplete fetch failed:", err);
+      suggestions.value = [];
+    }
+  };
+
+  const debouncedFetchSuggestions = useDebounceFn(fetchSuggestions, 300);
+
+  const formattedTemperature = (temp) => {
+    if (temp == null) return "N/A";
+    const celsius = Math.round(temp);
+    const fahrenheit = ((temp * 9) / 5 + 32).toFixed(0);
+    return temperatureUnit.value === "Celsius"
+      ? `${celsius}°C`
+      : `${fahrenheit}°F`;
+  };
+
+  const toggleUnits = () => {
+    temperatureUnit.value =
+      temperatureUnit.value === "Celsius" ? "Fahrenheit" : "Celsius";
+  };
+
+  const toggleButtonText = computed(() =>
+    temperatureUnit.value === "Celsius" ? "Imperial" : "Metric"
+  );
+
+  const temperatureClass = computed(() => {
+    const temp = weatherData.value.main?.temp;
+    if (temp == null) return "";
+    if (temp <= 3) return "freezing";
+    if (temp <= 16) return "cool";
+    if (temp <= 24) return "warm";
+    return "hot";
+  });
+
+  const location = computed(() => weatherData.value.name || "—");
+  const countryCode = computed(() => weatherData.value.sys?.country || "");
+
+  const currentDate = computed(() => {
+    const dt = weatherData.value.dt;
+    const offset = weatherData.value.timezone || 0;
+    if (!dt) return "";
+    const localTime = new Date((dt + offset) * 1000);
+    return localTime.toLocaleString("en-GB", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  });
+
+  const weatherCondition = computed(
+    () => weatherData.value.weather?.[0]?.main || ""
+  );
+
+  const shouldShowWeatherDetails = computed(() =>
+    ["Rain", "Snow", "Clouds"].includes(weatherCondition.value)
+  );
+
+  const weatherDetails = computed(() => {
+    const { rain, snow, clouds } = weatherData.value;
+    switch (weatherCondition.value) {
+      case "Rain":
+        return rain?.["1h"] ? `${rain["1h"]} mm` : "N/A";
+      case "Snow":
+        return snow?.["1h"] ? `${snow["1h"]} mm` : "N/A";
+      case "Clouds":
+        return `${clouds?.all ?? "N/A"}%`;
+      default:
+        return "";
+    }
+  });
+
+  const isDaytime = computed(() => {
+    const now = weatherData.value.dt;
+    const { sunrise, sunset } = weatherData.value.sys || {};
+    return now && sunrise && sunset ? now >= sunrise && now < sunset : true;
+  });
 
   const iconMap = {
     "Clear:Clear Sky": "day",
@@ -42,107 +168,11 @@ export function useWeather() {
     "Squall:Squall": "windy",
   };
 
-  const fetchWeather = async () => {
-    const city = query.value.trim();
-    if (!city) return;
-
-    try {
-      const response = await fetch(
-        `https://weather-rose-chi.vercel.app/api/weather?city=${encodeURIComponent(
-          city
-        )}`
-      );
-      const result = await response.json();
-
-      if (result.cod === "404") {
-        console.warn("City not found.");
-        weatherData.value = {};
-        return;
-      }
-
-      weatherData.value = result;
-    } catch (error) {
-      console.error("Error fetching weather data:", error);
-      weatherData.value = {};
-    }
-  };
-
-  const debounceFetchWeather = useDebounceFn(fetchWeather, 1500);
-
-  const formattedTemperature = (temp) => {
-    if (temp == null) return "N/A";
-    return temperatureUnit.value === "Celsius"
-      ? `${Math.round(temp)}°C`
-      : `${((temp * 9) / 5 + 32).toFixed(0)}°F`;
-  };
-
-  const toggleUnits = () => {
-    temperatureUnit.value =
-      temperatureUnit.value === "Celsius" ? "Fahrenheit" : "Celsius";
-  };
-
-  const temperatureClass = computed(() => {
-    const temp = weatherData.value.main?.temp;
-    if (temp == null) return "";
-    if (temp <= 3) return "freezing";
-    if (temp <= 16) return "cool";
-    if (temp <= 24) return "warm";
-    return "hot";
-  });
-
-  const location = computed(() => weatherData.value.name || "—");
-
-  const countryCode = computed(() => weatherData.value.sys?.country || "");
-
-  const currentDate = computed(() => {
-    const dt = weatherData.value.dt;
-    const offset = weatherData.value.timezone || 0;
-    if (!dt) return "";
-    const localTime = new Date((dt + offset) * 1000);
-    return localTime.toLocaleString("en-GB", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  });
-
-  const toggleButtonText = computed(() =>
-    temperatureUnit.value === "Celsius" ? "Imperial" : "Metric"
-  );
-
-  const weatherCondition = computed(
-    () => weatherData.value.weather?.[0]?.main || ""
-  );
-
-  const shouldShowWeatherDetails = computed(() =>
-    ["Rain", "Snow", "Clouds"].includes(weatherCondition.value)
-  );
-
-  const weatherDetails = computed(() => {
-    const condition = weatherCondition.value;
-    const { rain, snow, clouds } = weatherData.value;
-
-    if (condition === "Rain") return rain?.["1h"] ? `${rain["1h"]} mm` : "N/A";
-    if (condition === "Snow") return snow?.["1h"] ? `${snow["1h"]} mm` : "N/A";
-    if (condition === "Clouds") return `${clouds?.all ?? "N/A"}%`;
-    return "";
-  });
-
-  const isDaytime = computed(() => {
-    const now = weatherData.value.dt;
-    const sunrise = weatherData.value.sys?.sunrise;
-    const sunset = weatherData.value.sys?.sunset;
-    return now && sunrise && sunset ? now >= sunrise && now < sunset : true;
-  });
-
   const weatherIconUrl = computed(() => {
     const main = weatherData.value.weather?.[0]?.main || "";
-    const description = weatherData.value.weather?.[0]?.description || "";
+    const desc = weatherData.value.weather?.[0]?.description || "";
 
-    const formattedDesc = description
+    const formattedDesc = desc
       .toLowerCase()
       .replace(/(^\w|\s\w)/g, (m) => m.toUpperCase());
 
@@ -162,17 +192,17 @@ export function useWeather() {
     const visibility = weatherData.value.visibility;
     const sys = weatherData.value.sys || {};
 
-    const formatTime = (timestamp) => {
-      if (!timestamp) return "N/A";
-      return new Date(timestamp * 1000).toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-    };
+    const formatTime = (ts) =>
+      ts
+        ? new Date(ts * 1000).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        : "N/A";
 
-    const convertWindDirection = (deg) => {
-      const directions = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
-      return deg != null ? directions[Math.round(deg / 45) % 8] : "N/A";
+    const windDirection = (deg) => {
+      const dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+      return deg != null ? dirs[Math.round(deg / 45) % 8] : "N/A";
     };
 
     return {
@@ -181,7 +211,7 @@ export function useWeather() {
       "Max Temp": formattedTemperature(main.temp_max),
       Humidity: main.humidity != null ? `${main.humidity}%` : "N/A",
       Winds: wind.speed != null ? `${wind.speed.toFixed(0)} MPH` : "N/A",
-      "Wind Direction": convertWindDirection(wind.deg),
+      "Wind Direction": windDirection(wind.deg),
       Pressure: main.pressure != null ? `${main.pressure} hPa` : "N/A",
       Visibility:
         visibility != null
@@ -192,8 +222,21 @@ export function useWeather() {
     };
   });
 
-  const handleKeyPress = (event) => {
-    if (event.key === "Enter") fetchWeather();
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      if (suggestions.value.length > 0) {
+        selectCity(suggestions.value[0]);
+      } else {
+        debounceFetchWeather();
+      }
+    }
+  };
+
+  const selectCity = (city) => {
+    query.value = `${city.name}, ${city.country}`;
+    suggestions.value = [];
+    showSuggestions.value = false;
+    debounceFetchWeather();
   };
 
   return {
@@ -213,5 +256,12 @@ export function useWeather() {
     weatherDetailsObject,
     weatherIconUrl,
     handleKeyPress,
+    selectCity,
+
+    // Autocomplete
+    suggestions,
+    showSuggestions,
+    fetchSuggestions,
+    debouncedFetchSuggestions,
   };
 }

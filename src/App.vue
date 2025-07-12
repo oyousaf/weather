@@ -7,18 +7,33 @@
     ]"
   >
     <main class="flex flex-col items-center px-4 py-10 text-white font-sans">
-      <!-- Search Bar -->
-      <div class="w-full max-w-2xl mb-8">
+      <!-- Search Bar with Autocomplete -->
+      <div class="w-full max-w-2xl mb-8 relative">
         <input
           v-model="query"
           name="query"
-          @input="debounceFetchWeather"
+          @input="onInput"
           @keydown.enter="handleKeyPress"
+          @blur="handleBlur"
           type="text"
           placeholder="Search for a city..."
           class="w-full p-4 text-lg text-center text-teal-700 rounded-2xl bg-white/60 backdrop-blur-sm shadow-xl placeholder:text-teal-800 focus:outline-none focus:ring-4 focus:ring-white transition"
           aria-label="Enter city name"
         />
+        <ul
+          v-if="suggestions.length && showSuggestions"
+          class="absolute z-10 w-full bg-white text-teal-900 rounded-xl mt-1 shadow-lg overflow-hidden"
+        >
+          <li
+            v-for="(city, index) in suggestions"
+            :key="index"
+            @click="selectCity(city)"
+            class="px-4 py-2 hover:bg-teal-100 cursor-pointer transition"
+          >
+            {{ city.name }}, {{ city.state ? city.state + ", " : ""
+            }}{{ city.country }}
+          </li>
+        </ul>
       </div>
 
       <!-- Weather Display -->
@@ -99,10 +114,13 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
+import axios from "axios";
+import { useDebounceFn } from "@vueuse/core";
 import { useWeather } from "./composables/useWeather";
 import { useFlag } from "./composables/useFlag";
 
-// ✅ Destructure all refs from useWeather for template access
+// 🍃 Weather composable
 const {
   query,
   weatherData,
@@ -123,6 +141,60 @@ const {
 } = useWeather();
 
 const { svgFlag } = useFlag(countryCode);
+
+// 🌐 Autocomplete state
+const suggestions = ref([]);
+const showSuggestions = ref(false);
+
+// ✅ Use server proxy to fetch suggestions
+const fetchSuggestions = async () => {
+  const input = query.value.trim();
+  if (input.length < 2) {
+    suggestions.value = [];
+    showSuggestions.value = false;
+    return;
+  }
+
+  try {
+    const { data } = await axios.get(
+      `/api/suggest?query=${encodeURIComponent(input)}`
+    );
+    suggestions.value = data;
+    showSuggestions.value = true;
+
+    // ✅ Hybrid auto-select: if single confident match
+    const only = data[0];
+    if (data.length === 1 && only.name.toLowerCase() === input.toLowerCase()) {
+      selectCity(only);
+    }
+  } catch (err) {
+    console.error("Autocomplete error:", err);
+    suggestions.value = [];
+  }
+};
+
+const debouncedCitySearch = useDebounceFn(fetchSuggestions, 300);
+
+// 🔄 Handle input and fetch both autocomplete and weather
+const onInput = () => {
+  debounceFetchWeather();
+  debouncedCitySearch();
+};
+
+// 📤 Handle suggestion selection
+const selectCity = (city) => {
+  query.value = `${city.name}, ${city.country}`;
+  suggestions.value = [];
+  showSuggestions.value = false;
+  debounceFetchWeather();
+};
+
+// 🛠 Fix setTimeout scope error
+const handleBlur = () => {
+  setTimeout(() => {
+    showSuggestions.value = false;
+  }, 150);
+};
 </script>
 
 <style scoped>
