@@ -122,9 +122,7 @@ export function useWeather(flagSetter = () => {}) {
   const debouncedFetchSuggestions = useDebounceFn(fetchSuggestions, 300);
 
   const selectCity = (city) => {
-    const fullLabel = `${city.name}${city.state ? ", " + city.state : ""}, ${
-      city.country
-    }`;
+    const fullLabel = `${city.name}${city.state ? ", " + city.state : ""}`;
     selectedLabel.value = fullLabel;
     query.value = fullLabel;
 
