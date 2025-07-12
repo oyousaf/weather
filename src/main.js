@@ -3,7 +3,4 @@ import App from "./App.vue";
 import "./assets/globals.css";
 import { MotionPlugin } from "@vueuse/motion";
 
-const app = createApp(App);
-
-app.use(MotionPlugin);
-app.mount("#app");
+createApp(App).use(MotionPlugin).mount("#app");
