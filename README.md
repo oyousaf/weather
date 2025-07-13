@@ -19,7 +19,7 @@ Weatherly is a simple and elegant weather application built using **Vue 3.5**. I
 ## 🚀 Features
 
 - 📍 Get current weather by geolocation or manual search
-- 🌡️ Displays temperature, humidity, wind speed, and various conditions
+- 🌡️ Displays temperature, humidity, wind speed, and various other conditions
 - 🎌 Shows country flags using ISO 3166-1 alpha-2 codes
 - 🎨 Responsive and mobile-first design
 - 🔄 Real-time data fetching from OpenWeatherMap API
