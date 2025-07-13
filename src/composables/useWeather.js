@@ -60,10 +60,17 @@ export function useWeather(flagSetter = () => {}) {
     isLoading.value = true;
     try {
       const res = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Weather API error:", res.status, errorText);
+        weatherData.value = {};
+        return;
+      }
+
       const result = await res.json();
       weatherData.value = result.cod === "404" ? {} : result;
 
-      // If successful and no selectedLabel, sync fallback flag
       if (result.sys?.country && !selectedLabel.value) {
         flagSetter(getFlagSvg(result.sys.country));
       }
@@ -79,6 +86,13 @@ export function useWeather(flagSetter = () => {}) {
     isLoading.value = true;
     try {
       const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error("Coords API error:", res.status, errorText);
+        weatherData.value = {};
+        return;
+      }
+
       const result = await res.json();
       weatherData.value = result.cod === "404" ? {} : result;
     } catch (err) {
@@ -114,7 +128,9 @@ export function useWeather(flagSetter = () => {}) {
         selectCity(only);
       }
     } catch (err) {
-      console.error("Autocomplete fetch failed:", err);
+      const msg =
+        err.response?.data?.error || err.response?.statusText || err.message;
+      console.error("Autocomplete fetch failed:", msg);
       suggestions.value = [];
     }
   };
@@ -337,5 +353,6 @@ export function useWeather(flagSetter = () => {}) {
     debouncedFetchSuggestions,
     recentSearches,
     highlightedIndex,
+    fetchWeatherByCoords, 
   };
 }

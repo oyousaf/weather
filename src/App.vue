@@ -159,6 +159,7 @@
 </template>
 
 <script setup>
+import { onMounted } from "vue";
 import { useWeather } from "./composables/useWeather";
 import { useFlag } from "./composables/useFlag";
 import { flagMap } from "./constants/flagMap";
@@ -186,6 +187,7 @@ const {
   suggestions,
   showSuggestions,
   debouncedFetchSuggestions,
+  fetchWeatherByCoords,
 } = useWeather();
 
 // Flag for the selected weather result
@@ -212,6 +214,24 @@ const getFlagSvg = (code) => {
       )}" class="w-full h-full object-cover" />`
     : "";
 };
+
+// 🌍 Auto-fetch on mount via IP
+onMounted(async () => {
+  try {
+    const res = await fetch("https://ipapi.co/json/");
+    if (!res.ok) throw new Error("Failed to fetch IP location");
+
+    const data = await res.json();
+    const { latitude, longitude } = data;
+
+    if (latitude && longitude) {
+      console.log("📍 Using IP location:", latitude, longitude);
+      fetchWeatherByCoords(latitude, longitude);
+    }
+  } catch (err) {
+    console.error("🌍 IP-based location fetch failed:", err);
+  }
+});
 </script>
 
 <style scoped>
