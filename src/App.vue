@@ -226,7 +226,6 @@ onMounted(async () => {
     const { latitude, longitude } = data;
 
     if (latitude && longitude) {
-      console.log("📍 Using IP location:", latitude, longitude);
       await fetchWeatherByCoords(latitude, longitude);
       return;
     }
