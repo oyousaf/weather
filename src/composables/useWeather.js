@@ -9,7 +9,6 @@ export function useWeather(flagSetter = () => {}) {
   const weatherData = ref({});
   const temperatureUnit = ref("Celsius");
   const isLoading = ref(false);
-
   const suggestions = ref([]);
   const showSuggestions = ref(false);
   const highlightedIndex = ref(-1);
@@ -17,6 +16,9 @@ export function useWeather(flagSetter = () => {}) {
   const recentSearches = ref(
     JSON.parse(localStorage.getItem("recentSearches") || "[]")
   );
+
+  const CACHE_KEY = "cachedWeather";
+  const CACHE_TTL_MS = 30 * 60 * 1000;
 
   const getFlagSvg = (code) => {
     const svg = flagMap[code?.trim()?.toUpperCase()];
@@ -53,6 +55,29 @@ export function useWeather(flagSetter = () => {}) {
     }
   };
 
+  const cacheWeather = (data) => {
+    const cache = {
+      data,
+      expiresAt: Date.now() + CACHE_TTL_MS,
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+  };
+
+  const restoreCachedWeather = () => {
+    try {
+      const cached = JSON.parse(localStorage.getItem(CACHE_KEY));
+      if (!cached || !cached.data || !cached.expiresAt) return;
+
+      if (Date.now() < cached.expiresAt) {
+        weatherData.value = cached.data;
+      } else {
+        localStorage.removeItem(CACHE_KEY);
+      }
+    } catch (err) {
+      console.warn("❌ Failed to restore cached weather:", err);
+    }
+  };
+
   const fetchWeather = async () => {
     const city = query.value.trim();
     if (!city) return;
@@ -60,7 +85,6 @@ export function useWeather(flagSetter = () => {}) {
     isLoading.value = true;
     try {
       const res = await fetch(`/api/weather?city=${encodeURIComponent(city)}`);
-
       if (!res.ok) {
         const errorText = await res.text();
         console.error("Weather API error:", res.status, errorText);
@@ -69,10 +93,14 @@ export function useWeather(flagSetter = () => {}) {
       }
 
       const result = await res.json();
-      weatherData.value = result.cod === "404" ? {} : result;
+      const isValid = result && result.cod !== "404";
+      weatherData.value = isValid ? result : {};
 
-      if (result.sys?.country && !selectedLabel.value) {
-        flagSetter(getFlagSvg(result.sys.country));
+      if (isValid) {
+        cacheWeather(result);
+        if (result.sys?.country && !selectedLabel.value) {
+          flagSetter(getFlagSvg(result.sys.country));
+        }
       }
     } catch (err) {
       console.error("Weather fetch failed:", err);
@@ -94,7 +122,12 @@ export function useWeather(flagSetter = () => {}) {
       }
 
       const result = await res.json();
-      weatherData.value = result.cod === "404" ? {} : result;
+      const isValid = result && result.cod !== "404";
+      weatherData.value = isValid ? result : {};
+
+      if (isValid) {
+        cacheWeather(result);
+      }
     } catch (err) {
       console.error("Weather fetch failed:", err);
       weatherData.value = {};
@@ -353,6 +386,8 @@ export function useWeather(flagSetter = () => {}) {
     debouncedFetchSuggestions,
     recentSearches,
     highlightedIndex,
-    fetchWeatherByCoords, 
+    fetchWeatherByCoords,
+    fetchWeather,
+    restoreCachedWeather,
   };
 }

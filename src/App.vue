@@ -169,6 +169,7 @@ const {
   query,
   weatherData,
   formattedTemperature,
+  fetchWeather,
   location,
   countryCode,
   currentDate,
@@ -225,10 +226,18 @@ onMounted(async () => {
     const { latitude, longitude } = data;
 
     if (latitude && longitude) {
-      fetchWeatherByCoords(latitude, longitude);
+      console.log("📍 Using IP location:", latitude, longitude);
+      await fetchWeatherByCoords(latitude, longitude);
+      return;
     }
+
+    throw new Error("Missing coordinates from IP service");
   } catch (err) {
-    console.error("🌍 IP-based location fetch failed:", err);
+    console.warn("🌍 IP-based location failed, using fallback: London, GB");
+
+    // Trigger default fallback city manually
+    query.value = "London";
+    await fetchWeather();
   }
 });
 </script>
