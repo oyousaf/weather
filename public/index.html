@@ -8,17 +8,55 @@
     <title>Weatherly – A Vue Weather App</title>
     <meta
       name="description"
-      content="Check real-time weather conditions worldwide with Weatherly, a sleek Vue-based weather app by KUFI."
+      content="Check real-time weather conditions worldwide with Weatherly, a sleek Vue-based weather app by Kufi."
     />
-    <meta name="author" content="KUFI, kufi.uk" />
+    <meta name="author" content="Kufi" />
     <meta
       name="keywords"
-      content="weather, weather app, kufi, kufi.uk, oyousaf, oyousaf87, openweathermap, vue, javascript, api, motion"
+      content="weather, weather app, KUFI, kufi.uk, openweathermap, vue, javascript, api, motion"
     />
     <meta name="theme-color" content="#0f766e" />
+    <meta name="robots" content="index, follow" />
 
+    <link rel="canonical" href="https://kufi.uk/" />
     <link rel="icon" href="./favicon.ico" type="image/x-icon" />
     <link rel="apple-touch-icon" href="./favicon.ico" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kufi.uk/" />
+    <meta property="og:title" content="Weatherly – A Vue Weather App" />
+    <meta
+      property="og:description"
+      content="Real-time weather updates worldwide. Built with Vue and powered by OpenWeatherMap."
+    />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Weatherly – A Vue Weather App" />
+    <meta
+      name="twitter:description"
+      content="Get accurate, real-time weather updates from anywhere in the world."
+    />
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Weatherly",
+        "description": "A Vue-based real-time weather app powered by OpenWeatherMap.",
+        "applicationCategory": "Weather",
+        "operatingSystem": "All",
+        "url": "https://kufi.uk",
+        "creator": {
+          "@type": "Person",
+          "name": "KUFI",
+          "url": "https://kufi.uk"
+        },
+        "inLanguage": "en",
+      }
+    </script>
   </head>
 
   <body class="bg-teal-800 text-white font-sans">
@@ -28,6 +66,6 @@
         continue.
       </strong>
     </noscript>
-    <div id="app"></div>
+    <main id="app"></main>
   </body>
 </html>
