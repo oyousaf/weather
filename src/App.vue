@@ -1,4 +1,5 @@
 <template>
+  <Analytics />
   <div
     id="app"
     :class="[
@@ -163,6 +164,7 @@ import { onMounted } from "vue";
 import { useWeather } from "./composables/useWeather";
 import { useFlag } from "./composables/useFlag";
 import { flagMap } from "./constants/flagMap";
+import { Analytics } from '@vercel/analytics/vue';
 
 // Weather state and helpers
 const {

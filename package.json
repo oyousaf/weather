@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@tsparticles/vue3": "^3.0.1",
+    "@vercel/analytics": "^1.5.0",
     "@vueuse/motion": "^2.2.6",
     "axios": "^1.10.0",
     "core-js": "^3.8.3",
