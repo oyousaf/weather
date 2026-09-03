@@ -5,6 +5,9 @@ export default defineEventHandler(async (event) => {
   if (input.length < 2) {
     throw createError({ statusCode: 400, statusMessage: "Query must be at least 2 characters." });
   }
+  if (input.length > 100) {
+    throw createError({ statusCode: 400, statusMessage: "Query too long." });
+  }
   if (!config.openWeatherApiKey) {
     throw createError({ statusCode: 500, statusMessage: "Missing API key." });
   }

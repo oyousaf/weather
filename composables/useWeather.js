@@ -5,7 +5,7 @@ export function useWeather() {
   const query = ref("");
   const selectedLabel = ref("");
   const weatherData = useLocalStorage(
-    "cachedWeather",
+    "weatherly:cachedWeather",
     {},
     {
       serializer: {
@@ -18,10 +18,23 @@ export function useWeather() {
   const showSuggestions = ref(false);
   const highlightedIndex = ref(-1);
   const isLoading = ref(false);
+  const isLocating = ref(false);
+  const isFetching = ref(false);
   const errorMessage = ref("");
-  const unit = useLocalStorage("weather-unit", "C");
+  const unit = useLocalStorage("weatherly:unit", "C");
   let searchTimer;
   let suggestionTimer;
+
+  if (import.meta.client) {
+    const CACHE_MAX_AGE_MS = 30 * 60 * 1000;
+    const cached = weatherData.value;
+    if (cached?.dt) {
+      const fetchedAt = cached.dt * 1000;
+      if (Date.now() - fetchedAt > CACHE_MAX_AGE_MS) {
+        weatherData.value = {};
+      }
+    }
+  }
 
   const condition = computed(() => weatherData.value.weather?.[0]?.main || "");
   const description = computed(
@@ -119,15 +132,42 @@ export function useWeather() {
     ],
     ["Sunrise", formatTime(weatherData.value.sys?.sunrise), "↗"],
   ]);
-  const flag = computed(() =>
-    country.value
+  const flag = computed(() => {
+    const code = country.value;
+    if (!code || code.length !== 2) return "";
+    return code
       .toUpperCase()
       .replace(/[A-Z]/g, (letter) =>
         String.fromCodePoint(letter.charCodeAt(0) + 127397),
-      ),
-  );
+      );
+  });
+  const localDate = computed(() => {
+    const dt = weatherData.value.dt;
+    if (!dt) return "";
+    return new Date(
+      (dt + (weatherData.value.timezone || 0)) * 1000,
+    ).toLocaleString("en-GB", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  });
+  const lastUpdated = computed(() => {
+    const dt = weatherData.value.dt;
+    if (!dt) return "";
+    const diffMs = Date.now() - dt * 1000;
+    const minutes = Math.max(0, Math.round(diffMs / 60000));
+    if (minutes < 1) return "Updated just now";
+    if (minutes === 1) return "Updated 1 min ago";
+    if (minutes < 60) return `Updated ${minutes} min ago`;
+    const hours = Math.round(minutes / 60);
+    return hours === 1 ? "Updated 1 hour ago" : `Updated ${hours} hours ago`;
+  });
 
   const fetchWeather = async (params) => {
+    isFetching.value = true;
     isLoading.value = true;
     errorMessage.value = "";
     try {
@@ -135,10 +175,20 @@ export function useWeather() {
       weatherData.value = data;
       if (params.city) selectedLabel.value = params.city;
     } catch (error) {
-      errorMessage.value =
-        error?.statusMessage || "We couldn't find that forecast.";
-      weatherData.value = {};
+      const status = error?.response?.status;
+      const message = error?.data?.statusMessage || error?.statusMessage;
+      if (!status && /fetch|network/i.test(error?.message || "")) {
+        errorMessage.value = "You're offline. Check your connection.";
+      } else if (status === 404) {
+        errorMessage.value = "We couldn't find that place.";
+      } else if (message) {
+        errorMessage.value = message;
+      } else {
+        errorMessage.value = "We couldn't find that forecast.";
+      }
+      if (status === 404) weatherData.value = {};
     } finally {
+      isFetching.value = false;
       isLoading.value = false;
     }
   };
@@ -154,11 +204,11 @@ export function useWeather() {
       showSuggestions.value = false;
       return;
     }
+    showSuggestions.value = true;
     try {
       suggestions.value = await $fetch("/api/suggest", {
         query: { query: value },
       });
-      showSuggestions.value = true;
     } catch {
       suggestions.value = [];
     }
@@ -170,6 +220,8 @@ export function useWeather() {
     searchTimer = setTimeout(search, 1300);
   };
   const selectCity = (city) => {
+    clearTimeout(searchTimer);
+    clearTimeout(suggestionTimer);
     const label = `${city.name}${city.state ? `, ${city.state}` : ""}`;
     query.value = label;
     selectedLabel.value = label;
@@ -191,11 +243,32 @@ export function useWeather() {
     }
   };
   const locate = () => {
-    if (!navigator.geolocation) return;
+    if (!navigator.geolocation) {
+      errorMessage.value =
+        "Your browser doesn't support location services — try searching for a city.";
+      return;
+    }
+    isLocating.value = true;
+    isLoading.value = true;
     navigator.geolocation.getCurrentPosition(
-      ({ coords }) =>
-        fetchWeather({ lat: coords.latitude, lon: coords.longitude }),
-      () => fetchWeather({ city: "London" }),
+      ({ coords }) => {
+        isLocating.value = false;
+        fetchWeather({ lat: coords.latitude, lon: coords.longitude });
+      },
+      (err) => {
+        isLocating.value = false;
+        isLoading.value = false;
+        if (err.code === err.PERMISSION_DENIED) {
+          errorMessage.value =
+            "Location access denied — search for a city instead.";
+        } else if (err.code === err.TIMEOUT) {
+          errorMessage.value =
+            "Location request timed out — search for a city instead.";
+        } else {
+          errorMessage.value =
+            "We couldn't get your location — search for a city instead.";
+        }
+      },
       { timeout: 6000 },
     );
   };
@@ -208,6 +281,8 @@ export function useWeather() {
     showSuggestions,
     highlightedIndex,
     isLoading,
+    isLocating,
+    isFetching,
     errorMessage,
     condition,
     description,
@@ -222,6 +297,8 @@ export function useWeather() {
     temperature,
     wind,
     details,
+    localDate,
+    lastUpdated,
     unit,
     onInput,
     selectCity,

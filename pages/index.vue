@@ -8,6 +8,8 @@ const {
   showSuggestions,
   highlightedIndex,
   isLoading,
+  isLocating,
+  isFetching,
   errorMessage,
   weatherData,
   condition,
@@ -21,6 +23,8 @@ const {
   temperature,
   wind,
   details,
+  localDate,
+  lastUpdated,
   unit,
   onInput,
   selectCity,
@@ -33,10 +37,14 @@ const searchWrapRef = ref(null);
 const searchInputRef = ref(null);
 const unitCButtonRef = ref(null);
 const unitFButtonRef = ref(null);
+const orbOneRef = ref(null);
+const orbTwoRef = ref(null);
 
 const searchGlow = usePointerGlow(searchWrapRef);
 const unitCGlow = usePointerGlow(unitCButtonRef);
 const unitFGlow = usePointerGlow(unitFButtonRef);
+
+useOrbRepel([orbOneRef, orbTwoRef], { radius: 250, maxPush: 60 });
 
 useEventListener(window, "keydown", (event) => {
   const isShortcut =
@@ -69,9 +77,9 @@ useSeoMeta({
     :style="tempStyle"
   >
     <div class="atmosphere" aria-hidden="true">
-      <span class="orb orb-one" /><span class="orb orb-two" /><span
-        class="rain-lines"
-      />
+      <span ref="orbOneRef" class="orb orb-one" />
+      <span ref="orbTwoRef" class="orb orb-two" />
+      <span class="rain-lines" />
     </div>
     <header class="topbar">
       <NuxtLink to="/" class="brand" aria-label="Weatherly home"
@@ -103,6 +111,7 @@ useSeoMeta({
           v-model="query"
           type="search"
           autocomplete="off"
+          aria-keyshortcuts="Control+K Meta+K Slash"
           placeholder="Search city or town..."
           @input="onInput"
           @keydown="handleKeydown"
@@ -113,12 +122,20 @@ useSeoMeta({
         </button>
         <Transition name="suggestions">
           <ul
-            v-if="showSuggestions && suggestions.length"
+            v-if="showSuggestions && query.length >= 2"
             class="suggestions"
             role="listbox"
           >
             <li
+              v-if="!suggestions.length"
+              class="suggestions-empty"
+              role="presentation"
+            >
+              No matches for "{{ query }}"
+            </li>
+            <li
               v-for="(city, index) in suggestions"
+              v-else
               :key="`${city.lat}-${city.lon}`"
               :class="{ active: index === highlightedIndex }"
               role="option"
@@ -148,7 +165,8 @@ useSeoMeta({
         class="loading-card"
         aria-live="polite"
       >
-        <span class="loader" /> Reading the sky...
+        <span class="loader" />
+        {{ isLocating ? "Finding your location…" : "Reading the sky…" }}
       </section>
     </Transition>
 
@@ -168,25 +186,15 @@ useSeoMeta({
                 flag
               }}</span>
             </h2>
-            <p class="local-date">
-              {{
-                new Date(
-                  (weatherData.dt + (weatherData.timezone || 0)) * 1000,
-                ).toLocaleString("en-GB", {
-                  weekday: "long",
-                  day: "numeric",
-                  month: "long",
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })
-              }}
-            </p>
+            <p class="local-date">{{ localDate }}</p>
+            <p v-if="lastUpdated" class="updated-stamp">{{ lastUpdated }}</p>
           </div>
           <div
             class="unit-toggle"
             role="group"
             aria-label="Temperature unit"
             :data-unit="unit"
+            aria-live="polite"
           >
             <button
               ref="unitCButtonRef"
@@ -228,7 +236,7 @@ useSeoMeta({
                   }}</span>
                 </Transition>
               </span>
-              · Wind {{ wind }}
+              <template v-if="wind !== '—'"> · Wind {{ wind }}</template>
             </p>
           </div>
           <img
@@ -238,6 +246,8 @@ useSeoMeta({
             class="weather-icon"
             width="120"
             height="120"
+            loading="lazy"
+            decoding="async"
           />
         </div>
         <div class="details-grid">

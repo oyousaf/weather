@@ -79,7 +79,7 @@ button {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
+  z-index: 0;
   overflow: hidden;
 }
 .orb {
@@ -87,7 +87,10 @@ button {
   border-radius: 50%;
   filter: blur(2px);
   opacity: 0.23;
+  --repel-x: 0px;
+  --repel-y: 0px;
   animation: drift 14s ease-in-out infinite alternate;
+  will-change: transform;
 }
 .orb-one {
   width: 48vw;
@@ -125,7 +128,11 @@ button {
 }
 @keyframes drift {
   to {
-    transform: translate(5vw, 3vh) scale(1.1);
+    transform: translate(
+        calc(5vw + var(--repel-x, 0px)),
+        calc(3vh + var(--repel-y, 0px))
+      )
+      scale(1.1);
   }
 }
 .topbar,
@@ -279,6 +286,13 @@ h1 em {
 .suggestions li.active {
   background: #dff3ee;
 }
+.suggestions-empty {
+  color: #64808d;
+  cursor: default;
+}
+.suggestions-empty:hover {
+  background: transparent;
+}
 .suggestions small {
   display: block;
   margin-top: 2px;
@@ -376,6 +390,18 @@ h1 em {
 .detail p {
   color: #ffffff8f;
   font-size: 0.85rem;
+}
+.local-date {
+  margin: 0 0 4px;
+}
+.updated-stamp {
+  margin: 0;
+  color: #ffffff5e;
+  font:
+    0.65rem "DM Mono",
+    monospace;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 .feels {
   position: relative;
