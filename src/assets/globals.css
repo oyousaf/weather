@@ -213,8 +213,6 @@ h1 em {
   background: #10202e66;
   box-shadow: 0 20px 50px #09121b35;
   backdrop-filter: blur(18px);
-  overflow: hidden;
-  isolation: isolate;
 }
 .search-wrap::before {
   position: absolute;
@@ -222,6 +220,7 @@ h1 em {
   z-index: -1;
   pointer-events: none;
   content: "";
+  border-radius: inherit;
   background: radial-gradient(
     220px circle at var(--glow-x, 50%) var(--glow-y, 50%),
     color-mix(in srgb, var(--accent) 35%, transparent),
@@ -570,7 +569,8 @@ footer {
     grid-template-columns: repeat(2, 1fr);
   }
   footer {
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
   }
 }
 @media (prefers-reduced-motion: reduce) {

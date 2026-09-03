@@ -83,7 +83,6 @@ useSeoMeta({
     </header>
 
     <section class="hero">
-      <p class="eyebrow">THE FORECAST, BUT MAKE IT FUN</p>
       <h1>How's the sky<br /><em>feeling today?</em></h1>
       <p class="intro">
         A tiny window into the world outside. Search a place and let the

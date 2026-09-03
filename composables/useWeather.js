@@ -45,11 +45,18 @@ export function useWeather() {
     const raw = weatherData.value.main?.temp;
     if (raw == null) return null;
     const temp = Math.max(-20, Math.min(45, raw));
-    const norm = (temp + 20) / 65;
-    const hue = 210 - norm * 205;
-    const sat = 70 + norm * 20;
-    const light = 55 - Math.abs(norm - 0.5) * 18;
-    const accentHue = hue + 12;
+    let hue;
+    if (temp <= 25) {
+      const norm = (temp + 20) / 45;
+      hue = 210 - norm * 180;
+    } else {
+      const norm = (temp - 25) / 20;
+      hue = 30 - norm * 22;
+    }
+    const heat = Math.max(0, (temp - 25) / 20);
+    const sat = 65 + heat * 30;
+    const light = 58 - heat * 8;
+    const accentHue = temp >= 25 ? Math.max(0, hue - 12) : hue + 12;
     return { hue, sat, light, accentHue };
   });
   const tempStyle = computed(() => {
