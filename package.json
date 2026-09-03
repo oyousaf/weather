@@ -3,52 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "generate": "nuxt generate"
   },
   "dependencies": {
-    "@tsparticles/vue3": "^3.0.1",
-    "@vercel/analytics": "^1.6.1",
-    "@vueuse/motion": "^2.2.6",
-    "axios": "^1.20.0",
-    "core-js": "^3.50.0",
-    "country-flag-icons": "^1.6.20",
-    "vue": "^3.5.42",
-    "vue-loader": "^17.4.2",
-    "vue-router": "^4.6.4",
-    "vuex": "^4.1.0"
+    "nuxt": "^4.5.2",
+    "vue": "^3.5.42"
   },
-  "devDependencies": {
-    "@babel/core": "^7.29.7",
-    "@babel/eslint-parser": "^7.29.7",
-    "@vue/cli-plugin-babel": "^5.0.9",
-    "@vue/cli-plugin-eslint": "^5.0.9",
-    "@vue/cli-service": "~5.0.0",
-    "autoprefixer": "^10.5.4",
-    "eslint": "^7.32.0",
-    "eslint-plugin-vue": "^8.7.1",
-    "postcss": "^8.5.27",
-    "tailwindcss": "^3.4.19"
-  },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/vue3-essential",
-      "eslint:recommended"
-    ],
-    "parserOptions": {
-      "parser": "@babel/eslint-parser"
-    },
-    "rules": {}
-  },
-  "browserslist": [
-    "> 1%",
-    "last 2 versions",
-    "not dead",
-    "not ie 11"
-  ]
+  "engines": {
+    "node": ">=20.19.0"
+  }
 }

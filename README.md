@@ -1,6 +1,6 @@
-# 🌦️ Weatherly - Vue 3.5 Weather App
+# ✦ Weatherly — Nuxt weather app
 
-Weatherly is a simple and elegant weather application built using **Vue 3.5**. It fetches real-time weather data based on your location or search input and presents it in a clean, responsive UI.
+Weatherly is a playful, polished weather experience built with **Nuxt 4**. It fetches real-time weather data based on your location or search input and adapts its atmosphere to the conditions outside.
 
 ---
 
@@ -8,11 +8,11 @@ Weatherly is a simple and elegant weather application built using **Vue 3.5**. I
 
 | Category               | Technology                                                             |
 | ---------------------- | ---------------------------------------------------------------------- |
-| **Frontend Framework** | [Vue.js 3.5](https://vuejs.org/)                                       |
-| **Styling**            | [Tailwind CSS](https://tailwindcss.com/)                               |
-| **HTTP Client**        | [Axios](https://axios-http.com/)                                       |
+| **Frontend Framework** | [Nuxt 4](https://nuxt.com/)                                            |
+| **Styling**            | Responsive CSS with weather-reactive gradients                         |
+| **Data layer**         | Nuxt server routes + `$fetch`                                          |
 | **APIs**               | [OpenWeatherMap API](https://openweathermap.org/)                      |
-| **Flags**              | [country-flag-icons](https://www.npmjs.com/package/country-flag-icons) |
+| **UX**                 | Accessible search, responsive layout, reduced-motion support          |
 
 ---
 
@@ -23,3 +23,14 @@ Weatherly is a simple and elegant weather application built using **Vue 3.5**. I
 - 🎌 Shows country flags using ISO 3166-1 alpha-2 codes
 - 🎨 Responsive and mobile-first design
 - 🔄 Real-time data fetching from OpenWeatherMap API
+- 🌈 Weather-reactive animated atmosphere with reduced-motion support
+- 🔎 Keyboard-friendly city search with accessible suggestions
+
+## Setup
+
+Create a `.env` file with `OPENWEATHER_API_KEY`, then run:
+
+```bash
+npm install
+npm run dev
+``` API
