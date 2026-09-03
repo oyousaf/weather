@@ -14,8 +14,13 @@ export function useWeather() {
   let suggestionTimer;
 
   const condition = computed(() => weatherData.value.weather?.[0]?.main || "");
-  const description = computed(() => weatherData.value.weather?.[0]?.description || "");
-  const location = computed(() => selectedLabel.value || weatherData.value.name || "Your local forecast");
+  const description = computed(
+    () => weatherData.value.weather?.[0]?.description || "",
+  );
+  const location = computed(
+    () =>
+      selectedLabel.value || weatherData.value.name || "Your local forecast",
+  );
   const country = computed(() => weatherData.value.sys?.country || "");
   const theme = computed(() => {
     const id = weatherData.value.weather?.[0]?.id || 800;
@@ -37,25 +42,54 @@ export function useWeather() {
   });
   const temperature = (value) => {
     if (value == null) return "—";
-    return unit.value === "C" ? `${Math.round(value)}°` : `${Math.round(value * 9 / 5 + 32)}°`;
+    return unit.value === "C"
+      ? `${Math.round(value)}°`
+      : `${Math.round((value * 9) / 5 + 32)}°`;
   };
   const wind = computed(() => {
     const speed = weatherData.value.wind?.speed;
     return speed == null ? "—" : `${Math.round(speed * 2.237)} mph`;
   });
-  const formatTime = (value) => value
-    ? new Date(value * 1000).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    : "—";
+  const formatTime = (value) =>
+    value
+      ? new Date(value * 1000).toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "—";
   const details = computed(() => [
     ["Feels like", temperature(weatherData.value.main?.feels_like), "°"],
-    ["Humidity", weatherData.value.main?.humidity != null ? `${weatherData.value.main.humidity}%` : "—", "◌"],
+    [
+      "Humidity",
+      weatherData.value.main?.humidity != null
+        ? `${weatherData.value.main.humidity}%`
+        : "—",
+      "◌",
+    ],
     ["Wind", wind.value, "↗"],
-    ["Visibility", weatherData.value.visibility ? `${(weatherData.value.visibility / 1609).toFixed(1)} mi` : "—", "◉"],
-    ["Pressure", weatherData.value.main?.pressure ? `${weatherData.value.main.pressure} hPa` : "—", "⌁"],
+    [
+      "Visibility",
+      weatherData.value.visibility
+        ? `${(weatherData.value.visibility / 1609).toFixed(1)} mi`
+        : "—",
+      "◉",
+    ],
+    [
+      "Pressure",
+      weatherData.value.main?.pressure
+        ? `${weatherData.value.main.pressure} hPa`
+        : "—",
+      "⌁",
+    ],
     ["Sunrise", formatTime(weatherData.value.sys?.sunrise), "↗"],
   ]);
-  const flag = computed(() => country.value.toUpperCase().replace(/[A-Z]/g, (letter) =>
-    String.fromCodePoint(letter.charCodeAt(0) + 127397)));
+  const flag = computed(() =>
+    country.value
+      .toUpperCase()
+      .replace(/[A-Z]/g, (letter) =>
+        String.fromCodePoint(letter.charCodeAt(0) + 127397),
+      ),
+  );
 
   const fetchWeather = async (params) => {
     isLoading.value = true;
@@ -64,9 +98,11 @@ export function useWeather() {
       const data = await $fetch("/api/weather", { query: params });
       weatherData.value = data;
       if (params.city) selectedLabel.value = params.city;
-      if (import.meta.client) localStorage.setItem("cachedWeather", JSON.stringify(data));
+      if (import.meta.client)
+        localStorage.setItem("cachedWeather", JSON.stringify(data));
     } catch (error) {
-      errorMessage.value = error?.statusMessage || "We couldn't find that forecast.";
+      errorMessage.value =
+        error?.statusMessage || "We couldn't find that forecast.";
       weatherData.value = {};
     } finally {
       isLoading.value = false;
@@ -85,7 +121,9 @@ export function useWeather() {
       return;
     }
     try {
-      suggestions.value = await $fetch("/api/suggest", { query: { query: value } });
+      suggestions.value = await $fetch("/api/suggest", {
+        query: { query: value },
+      });
       showSuggestions.value = true;
     } catch {
       suggestions.value = [];
@@ -106,8 +144,13 @@ export function useWeather() {
     fetchWeather({ lat: city.lat, lon: city.lon });
   };
   const handleKeydown = (event) => {
-    if (event.key === "ArrowDown") highlightedIndex.value = Math.min(highlightedIndex.value + 1, suggestions.value.length - 1);
-    if (event.key === "ArrowUp") highlightedIndex.value = Math.max(highlightedIndex.value - 1, 0);
+    if (event.key === "ArrowDown")
+      highlightedIndex.value = Math.min(
+        highlightedIndex.value + 1,
+        suggestions.value.length - 1,
+      );
+    if (event.key === "ArrowUp")
+      highlightedIndex.value = Math.max(highlightedIndex.value - 1, 0);
     if (event.key === "Enter") {
       const city = suggestions.value[highlightedIndex.value];
       city ? selectCity(city) : search();
@@ -116,16 +159,38 @@ export function useWeather() {
   const locate = () => {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(
-      ({ coords }) => fetchWeather({ lat: coords.latitude, lon: coords.longitude }),
+      ({ coords }) =>
+        fetchWeather({ lat: coords.latitude, lon: coords.longitude }),
       () => fetchWeather({ city: "London" }),
-      { timeout: 6000 }
+      { timeout: 6000 },
     );
   };
 
   return {
-    query, selectedLabel, weatherData, suggestions, showSuggestions, highlightedIndex,
-    isLoading, errorMessage, condition, description, location, country, flag, theme,
-    isDay, iconUrl, temperature, wind, details, unit, onInput, selectCity, handleKeydown,
-    search, locate,
+    query,
+    selectedLabel,
+    weatherData,
+    suggestions,
+    showSuggestions,
+    highlightedIndex,
+    isLoading,
+    errorMessage,
+    condition,
+    description,
+    location,
+    country,
+    flag,
+    theme,
+    isDay,
+    iconUrl,
+    temperature,
+    wind,
+    details,
+    unit,
+    onInput,
+    selectCity,
+    handleKeydown,
+    search,
+    locate,
   };
 }

@@ -76,94 +76,114 @@ useSeoMeta({
         <button class="search-submit" type="submit" aria-label="Search">
           ↗
         </button>
-        <ul
-          v-if="showSuggestions && suggestions.length"
-          class="suggestions"
-          role="listbox"
-        >
-          <li
-            v-for="(city, index) in suggestions"
-            :key="`${city.lat}-${city.lon}`"
-            :class="{ active: index === highlightedIndex }"
-            role="option"
-            @mousedown.prevent="selectCity(city)"
+        <Transition name="suggestions">
+          <ul
+            v-if="showSuggestions && suggestions.length"
+            class="suggestions"
+            role="listbox"
           >
-            <span class="suggestion-pin">⌖</span
-            ><span
-              >{{ city.name
-              }}<small
-                >{{ city.state ? `${city.state}, ` : ""
-                }}{{ city.country }}</small
-              ></span
+            <li
+              v-for="(city, index) in suggestions"
+              :key="`${city.lat}-${city.lon}`"
+              :class="{ active: index === highlightedIndex }"
+              role="option"
+              @mousedown.prevent="selectCity(city)"
             >
-          </li>
-        </ul>
+              <span class="suggestion-pin">⌖</span
+              ><span
+                >{{ city.name
+                }}<small
+                  >{{ city.state ? `${city.state}, ` : ""
+                  }}{{ city.country }}</small
+                ></span
+              >
+            </li>
+          </ul>
+        </Transition>
       </form>
     </section>
 
-    <p v-if="errorMessage" class="alert" role="alert">{{ errorMessage }}</p>
-    <section v-if="isLoading" class="loading-card" aria-live="polite">
-      <span class="loader" /> Reading the sky...
-    </section>
+    <Transition name="notice" mode="out-in">
+      <p v-if="errorMessage" key="error" class="alert" role="alert">
+        {{ errorMessage }}
+      </p>
+      <section
+        v-else-if="isLoading"
+        key="loading"
+        class="loading-card"
+        aria-live="polite"
+      >
+        <span class="loader" /> Reading the sky...
+      </section>
+    </Transition>
 
-    <section v-else-if="condition" class="forecast-card" aria-live="polite">
-      <div class="forecast-heading">
-        <div>
-          <p class="card-label">RIGHT NOW</p>
-          <h2>
-            {{ location }}
-            <span class="flag" :aria-label="`${country} flag`">{{ flag }}</span>
-          </h2>
-          <p class="local-date">
-            {{
-              new Date(
-                (weatherData.dt + (weatherData.timezone || 0)) * 1000,
-              ).toLocaleString("en-GB", {
-                weekday: "long",
-                day: "numeric",
-                month: "long",
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            }}
-          </p>
+    <Transition name="forecast" mode="out-in">
+      <section
+        v-if="!isLoading && condition"
+        :key="`${location}-${weatherData.dt}-${unit}`"
+        class="forecast-card"
+        aria-live="polite"
+      >
+        <div class="forecast-heading">
+          <div>
+            <p class="card-label">RIGHT NOW</p>
+            <h2>
+              {{ location }}
+              <span class="flag" :aria-label="`${country} flag`">{{
+                flag
+              }}</span>
+            </h2>
+            <p class="local-date">
+              {{
+                new Date(
+                  (weatherData.dt + (weatherData.timezone || 0)) * 1000,
+                ).toLocaleString("en-GB", {
+                  weekday: "long",
+                  day: "numeric",
+                  month: "long",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              }}
+            </p>
+          </div>
+          <div class="unit-toggle" role="group" aria-label="Temperature unit">
+            <button :class="{ selected: unit === 'C' }" @click="unit = 'C'">
+              °C</button
+            ><button :class="{ selected: unit === 'F' }" @click="unit = 'F'">
+              °F
+            </button>
+          </div>
         </div>
-        <div class="unit-toggle" role="group" aria-label="Temperature unit">
-          <button :class="{ selected: unit === 'C' }" @click="unit = 'C'">
-            °C</button
-          ><button :class="{ selected: unit === 'F' }" @click="unit = 'F'">
-            °F
-          </button>
+        <div class="current-weather">
+          <div>
+            <p class="temperature">{{ temperature(weatherData.main?.temp) }}</p>
+            <p class="condition">
+              {{ condition }} <span>·</span> {{ description }}
+            </p>
+            <p class="feels">
+              Feels like {{ temperature(weatherData.main?.feels_like) }} · Wind
+              {{ wind }}
+            </p>
+          </div>
+          <img
+            v-if="iconUrl"
+            :src="iconUrl"
+            :alt="description"
+            class="weather-icon"
+            width="120"
+            height="120"
+          />
         </div>
-      </div>
-      <div class="current-weather">
-        <div>
-          <p class="temperature">{{ temperature(weatherData.main?.temp) }}</p>
-          <p class="condition">
-            {{ condition }} <span>·</span> {{ description }}
-          </p>
-          <p class="feels">
-            Feels like {{ temperature(weatherData.main?.feels_like) }} · Wind
-            {{ wind }}
-          </p>
+        <div class="details-grid">
+          <article v-for="detail in details" :key="detail[0]" class="detail">
+            <span class="detail-icon">{{ detail[2] }}</span>
+            <p>{{ detail[0] }}</p>
+            <strong>{{ detail[1] }}</strong>
+          </article>
         </div>
-        <img
-          v-if="iconUrl"
-          :src="iconUrl"
-          :alt="description"
-          class="weather-icon"
-          width="120"
-          height="120"
-        />
-      </div>
-      <div class="details-grid">
-        <article v-for="detail in details" :key="detail[0]" class="detail">
-          <span class="detail-icon">{{ detail[2] }}</span>
-          <p>{{ detail[0] }}</p>
-          <strong>{{ detail[1] }}</strong>
-        </article>
-      </div>
-    </section>
+      </section>
+    </Transition>
     <footer>
       <span>Weatherly</span><span>Powered by OpenWeather</span
       ><span>Made for curious humans ✦</span>
