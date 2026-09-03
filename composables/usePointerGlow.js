@@ -1,40 +1,35 @@
-import { computed, onScopeDispose, ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
+import { useElementBounding, useEventListener, usePointer } from "@vueuse/core";
 
 export function usePointerGlow(elementRef, options = {}) {
   const { enterScale = 1, leaveScale = 0 } = options;
   const x = ref(0);
   const y = ref(0);
-  const intensity = ref(0);
   const isInside = ref(false);
+  const intensity = ref(0);
 
-  const onMove = (event) => {
-    if (!elementRef.value) return;
-    const rect = elementRef.value.getBoundingClientRect();
-    const px = event.clientX - rect.left;
-    const py = event.clientY - rect.top;
-    if (px < 0 || py < 0 || px > rect.width || py > rect.height) {
+  const { x: px, y: py } = usePointer({ target: elementRef });
+  const { left, top, width, height } = useElementBounding(elementRef);
+
+  watch([px, py, left, top, width, height], ([cxp, cyp, l, t, w, h]) => {
+    if (!elementRef.value || w === 0 || h === 0) {
       if (isInside.value) isInside.value = false;
       return;
     }
-    x.value = px;
-    y.value = py;
+    const localX = cxp - l;
+    const localY = cyp - t;
+    if (localX < 0 || localY < 0 || localX > w || localY > h) {
+      if (isInside.value) isInside.value = false;
+      return;
+    }
+    x.value = localX;
+    y.value = localY;
     if (!isInside.value) isInside.value = true;
-  };
+  });
 
-  const onBlur = () => {
+  useEventListener(window, "blur", () => {
     isInside.value = false;
-  };
-
-  if (import.meta.client) {
-    window.addEventListener("pointermove", onMove, { passive: true });
-    window.addEventListener("pointerdown", onMove, { passive: true });
-    window.addEventListener("blur", onBlur);
-    onScopeDispose(() => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerdown", onMove);
-      window.removeEventListener("blur", onBlur);
-    });
-  }
+  });
 
   watch(isInside, (inside) => {
     intensity.value = inside ? enterScale : leaveScale;

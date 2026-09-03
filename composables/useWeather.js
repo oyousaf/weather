@@ -1,15 +1,25 @@
 import { computed, ref } from "vue";
+import { useLocalStorage } from "@vueuse/core";
 
 export function useWeather() {
   const query = ref("");
   const selectedLabel = ref("");
-  const weatherData = ref({});
+  const weatherData = useLocalStorage(
+    "cachedWeather",
+    {},
+    {
+      serializer: {
+        read: (raw) => (raw ? JSON.parse(raw) : {}),
+        write: (value) => JSON.stringify(value),
+      },
+    },
+  );
   const suggestions = ref([]);
   const showSuggestions = ref(false);
   const highlightedIndex = ref(-1);
   const isLoading = ref(false);
   const errorMessage = ref("");
-  const unit = ref("C");
+  const unit = useLocalStorage("weather-unit", "C");
   let searchTimer;
   let suggestionTimer;
 
@@ -117,8 +127,6 @@ export function useWeather() {
       const data = await $fetch("/api/weather", { query: params });
       weatherData.value = data;
       if (params.city) selectedLabel.value = params.city;
-      if (import.meta.client)
-        localStorage.setItem("cachedWeather", JSON.stringify(data));
     } catch (error) {
       errorMessage.value =
         error?.statusMessage || "We couldn't find that forecast.";

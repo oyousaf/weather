@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
+import { useEventListener } from "@vueuse/core";
 
 const {
   query,
@@ -29,12 +30,25 @@ const {
 } = useWeather();
 
 const searchWrapRef = ref(null);
+const searchInputRef = ref(null);
 const unitCButtonRef = ref(null);
 const unitFButtonRef = ref(null);
 
 const searchGlow = usePointerGlow(searchWrapRef);
 const unitCGlow = usePointerGlow(unitCButtonRef);
 const unitFGlow = usePointerGlow(unitFButtonRef);
+
+useEventListener(window, "keydown", (event) => {
+  const isShortcut =
+    (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k";
+  const isSlash =
+    event.key === "/" &&
+    !["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName);
+  if ((isShortcut || isSlash) && searchInputRef.value) {
+    event.preventDefault();
+    nextTick(() => searchInputRef.value.focus());
+  }
+});
 
 onMounted(locate);
 
@@ -86,6 +100,7 @@ useSeoMeta({
         <label for="city-search" class="sr-only">Search for a city</label>
         <input
           id="city-search"
+          ref="searchInputRef"
           v-model="query"
           type="search"
           autocomplete="off"
@@ -168,15 +183,20 @@ useSeoMeta({
               }}
             </p>
           </div>
-          <div class="unit-toggle" role="group" aria-label="Temperature unit" :data-unit="unit">
+          <div
+            class="unit-toggle"
+            role="group"
+            aria-label="Temperature unit"
+            :data-unit="unit"
+          >
             <button
               ref="unitCButtonRef"
               :class="{ selected: unit === 'C' }"
               :style="unitCGlow.style"
               @click="unit = 'C'"
             >
-              °C
-            </button><button
+              °C</button
+            ><button
               ref="unitFButtonRef"
               :class="{ selected: unit === 'F' }"
               :style="unitFGlow.style"
