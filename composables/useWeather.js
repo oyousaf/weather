@@ -31,6 +31,25 @@ export function useWeather() {
     if (id === 800) return "clear";
     return "clouds";
   });
+  const tempTint = computed(() => {
+    const raw = weatherData.value.main?.temp;
+    if (raw == null) return null;
+    const temp = Math.max(-20, Math.min(45, raw));
+    const norm = (temp + 20) / 65;
+    const hue = 210 - norm * 205;
+    const sat = 70 + norm * 20;
+    const light = 55 - Math.abs(norm - 0.5) * 18;
+    const accentHue = hue + 12;
+    return { hue, sat, light, accentHue };
+  });
+  const tempStyle = computed(() => {
+    const t = tempTint.value;
+    if (!t) return {};
+    return {
+      "--temp-tint": `hsl(${t.hue.toFixed(1)} ${t.sat.toFixed(1)}% ${t.light.toFixed(1)}%)`,
+      "--temp-accent": `hsl(${t.accentHue.toFixed(1)} ${t.sat.toFixed(1)}% ${Math.min(72, t.light + 10).toFixed(1)}%)`,
+    };
+  });
   const isDay = computed(() => {
     const now = weatherData.value.dt;
     const { sunrise, sunset } = weatherData.value.sys || {};
@@ -181,6 +200,8 @@ export function useWeather() {
     country,
     flag,
     theme,
+    tempTint,
+    tempStyle,
     isDay,
     iconUrl,
     temperature,

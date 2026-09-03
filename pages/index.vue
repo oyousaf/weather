@@ -12,6 +12,7 @@ const {
   location,
   flag,
   theme,
+  tempStyle,
   isDay,
   iconUrl,
   temperature,
@@ -38,7 +39,11 @@ useSeoMeta({
 </script>
 
 <template>
-  <main class="weather-app" :class="[`theme-${theme}`, { night: !isDay }]">
+  <main
+    class="weather-app"
+    :class="[`theme-${theme}`, { night: !isDay }]"
+    :style="tempStyle"
+  >
     <div class="atmosphere" aria-hidden="true">
       <span class="orb orb-one" /><span class="orb orb-two" /><span
         class="rain-lines"
@@ -147,18 +152,22 @@ useSeoMeta({
               }}
             </p>
           </div>
-          <div class="unit-toggle" role="group" aria-label="Temperature unit">
+          <div class="unit-toggle" role="group" aria-label="Temperature unit" :data-unit="unit">
             <button :class="{ selected: unit === 'C' }" @click="unit = 'C'">
-              °C</button
-            ><button :class="{ selected: unit === 'F' }" @click="unit = 'F'">
-              °F
+              <Transition name="toggle-pill">
+                <span :key="`C-${unit}`">°C</span>
+              </Transition>
+            </button><button :class="{ selected: unit === 'F' }" @click="unit = 'F'">
+              <Transition name="toggle-pill">
+                <span :key="`F-${unit}`">°F</span>
+              </Transition>
             </button>
           </div>
         </div>
         <div class="current-weather">
           <div>
             <p class="temperature">
-              <Transition name="unit-swap" mode="out-in">
+              <Transition name="unit-swap">
                 <span :key="unit">{{
                   temperature(weatherData.main?.temp)
                 }}</span>
@@ -169,7 +178,7 @@ useSeoMeta({
             </p>
             <p class="feels">
               Feels like
-              <Transition name="unit-swap" mode="out-in">
+              <Transition name="unit-swap">
                 <span :key="`feels-${unit}`">{{
                   temperature(weatherData.main?.feels_like)
                 }}</span>

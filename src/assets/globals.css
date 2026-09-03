@@ -60,6 +60,21 @@ button {
 .weather-app.night {
   filter: saturate(0.82);
 }
+.weather-app::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  background: radial-gradient(
+    ellipse at 50% 28%,
+    var(--temp-tint, transparent) 0%,
+    transparent 65%
+  );
+  mix-blend-mode: soft-light;
+  opacity: 0.65;
+  transition: background 0.7s ease, opacity 0.7s ease;
+}
 .atmosphere {
   position: absolute;
   inset: 0;
@@ -79,14 +94,16 @@ button {
   height: 48vw;
   top: -22vw;
   right: -12vw;
-  background: radial-gradient(circle, var(--accent), transparent 68%);
+  background: radial-gradient(circle, var(--temp-accent, var(--accent)), transparent 68%);
+  transition: background 0.7s ease;
 }
 .orb-two {
   width: 38vw;
   height: 38vw;
   bottom: -22vw;
   left: -15vw;
-  background: radial-gradient(circle, var(--accent-strong), transparent 70%);
+  background: radial-gradient(circle, var(--temp-accent, var(--accent-strong)), transparent 70%);
+  transition: background 0.7s ease;
   animation-delay: -5s;
 }
 .rain-lines {
@@ -302,16 +319,17 @@ h1 em {
 .unit-swap-enter-active,
 .unit-swap-leave-active {
   transition:
-    opacity 0.18s ease,
-    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    opacity 0.22s ease,
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.4s ease;
 }
-.unit-swap-enter-from,
+.unit-swap-enter-from {
+  opacity: 0;
+}
 .unit-swap-leave-to {
   opacity: 0;
-  transform: translateY(6px);
-}
-.unit-swap-leave-active {
-  position: absolute;
+  transform: translateY(-10px);
+  filter: blur(6px);
 }
 .forecast-heading,
 .current-weather {
@@ -338,21 +356,61 @@ h1 em {
   position: relative;
 }
 .unit-toggle {
+  position: relative;
   display: flex;
   padding: 4px;
   border: 1px solid #ffffff26;
   border-radius: 999px;
 }
+.unit-toggle::before {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 4px;
+  z-index: 0;
+  width: calc(50% - 4px);
+  content: "";
+  border-radius: 999px;
+  background: var(--accent);
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.unit-toggle[data-unit="C"]::before {
+  transform: translateX(0);
+}
+.unit-toggle[data-unit="F"]::before {
+  transform: translateX(100%);
+}
 .unit-toggle button {
+  position: relative;
+  z-index: 1;
   padding: 7px 12px;
   color: #ffffff80;
   border: 0;
   border-radius: 999px;
   background: transparent;
+  transition:
+    color 0.25s ease,
+    transform 0.12s ease;
+}
+.unit-toggle button:active {
+  transform: scale(0.94);
 }
 .unit-toggle button.selected {
   color: #172c35;
-  background: var(--accent);
+}
+.toggle-pill-enter-active,
+.toggle-pill-leave-active {
+  transition:
+    opacity 0.18s ease,
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.toggle-pill-enter-from {
+  opacity: 0;
+  transform: scale(0.85);
+}
+.toggle-pill-leave-to {
+  opacity: 0;
+  transform: scale(1.1);
 }
 .current-weather {
   align-items: center;
