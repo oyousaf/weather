@@ -213,6 +213,22 @@ h1 em {
   background: #10202e66;
   box-shadow: 0 20px 50px #09121b35;
   backdrop-filter: blur(18px);
+  overflow: hidden;
+  isolation: isolate;
+}
+.search-wrap::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  background: radial-gradient(
+    220px circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    color-mix(in srgb, var(--accent) 35%, transparent),
+    transparent 70%
+  );
+  opacity: var(--glow-intensity, 0);
+  transition: opacity 0.25s ease;
 }
 .search-icon {
   color: var(--accent);
@@ -318,18 +334,28 @@ h1 em {
 }
 .unit-swap-enter-active,
 .unit-swap-leave-active {
-  transition:
-    opacity 0.22s ease,
-    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.4s ease;
+  transition: clip-path 0.45s cubic-bezier(0.65, 0, 0.35, 1);
 }
 .unit-swap-enter-from {
-  opacity: 0;
+  clip-path: inset(100% 0 0 0);
 }
 .unit-swap-leave-to {
-  opacity: 0;
-  transform: translateY(-10px);
-  filter: blur(6px);
+  clip-path: inset(0 0 100% 0);
+}
+.temp-slot {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: 1fr;
+  place-items: end;
+  vertical-align: baseline;
+}
+.temp-slot-inline {
+  display: inline-grid;
+  vertical-align: baseline;
+}
+.temp-value {
+  grid-area: 1 / 1;
+  font-variant-numeric: tabular-nums;
 }
 .forecast-heading,
 .current-weather {
@@ -390,27 +416,29 @@ h1 em {
   background: transparent;
   transition:
     color 0.25s ease,
-    transform 0.12s ease;
+    transform 0.12s ease,
+    box-shadow 0.25s ease;
+}
+.unit-toggle button::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  border-radius: inherit;
+  background: radial-gradient(
+    120px circle at var(--glow-x, 50%) var(--glow-y, 50%),
+    color-mix(in srgb, var(--accent) 45%, transparent),
+    transparent 70%
+  );
+  opacity: var(--glow-intensity, 0);
+  transition: opacity 0.25s ease;
 }
 .unit-toggle button:active {
   transform: scale(0.94);
 }
 .unit-toggle button.selected {
   color: #172c35;
-}
-.toggle-pill-enter-active,
-.toggle-pill-leave-active {
-  transition:
-    opacity 0.18s ease,
-    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.toggle-pill-enter-from {
-  opacity: 0;
-  transform: scale(0.85);
-}
-.toggle-pill-leave-to {
-  opacity: 0;
-  transform: scale(1.1);
 }
 .current-weather {
   align-items: center;

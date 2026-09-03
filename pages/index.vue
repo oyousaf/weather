@@ -1,4 +1,6 @@
 <script setup>
+import { ref } from "vue";
+
 const {
   query,
   suggestions,
@@ -25,6 +27,14 @@ const {
   search,
   locate,
 } = useWeather();
+
+const searchWrapRef = ref(null);
+const unitCButtonRef = ref(null);
+const unitFButtonRef = ref(null);
+
+const searchGlow = usePointerGlow(searchWrapRef);
+const unitCGlow = usePointerGlow(unitCButtonRef);
+const unitFGlow = usePointerGlow(unitFButtonRef);
 
 onMounted(locate);
 
@@ -65,7 +75,13 @@ useSeoMeta({
         A tiny window into the world outside. Search a place and let the
         atmosphere set the mood.
       </p>
-      <form class="search-wrap" role="search" @submit.prevent="search">
+      <form
+        ref="searchWrapRef"
+        class="search-wrap"
+        role="search"
+        :style="searchGlow.style"
+        @submit.prevent="search"
+      >
         <span class="search-icon" aria-hidden="true">⌕</span>
         <label for="city-search" class="sr-only">Search for a city</label>
         <input
@@ -153,36 +169,46 @@ useSeoMeta({
             </p>
           </div>
           <div class="unit-toggle" role="group" aria-label="Temperature unit" :data-unit="unit">
-            <button :class="{ selected: unit === 'C' }" @click="unit = 'C'">
-              <Transition name="toggle-pill">
-                <span :key="`C-${unit}`">°C</span>
-              </Transition>
-            </button><button :class="{ selected: unit === 'F' }" @click="unit = 'F'">
-              <Transition name="toggle-pill">
-                <span :key="`F-${unit}`">°F</span>
-              </Transition>
+            <button
+              ref="unitCButtonRef"
+              :class="{ selected: unit === 'C' }"
+              :style="unitCGlow.style"
+              @click="unit = 'C'"
+            >
+              °C
+            </button><button
+              ref="unitFButtonRef"
+              :class="{ selected: unit === 'F' }"
+              :style="unitFGlow.style"
+              @click="unit = 'F'"
+            >
+              °F
             </button>
           </div>
         </div>
         <div class="current-weather">
           <div>
             <p class="temperature">
-              <Transition name="unit-swap">
-                <span :key="unit">{{
-                  temperature(weatherData.main?.temp)
-                }}</span>
-              </Transition>
+              <span class="temp-slot">
+                <Transition name="unit-swap">
+                  <span :key="unit" class="temp-value">{{
+                    temperature(weatherData.main?.temp)
+                  }}</span>
+                </Transition>
+              </span>
             </p>
             <p class="condition">
               {{ condition }} <span>·</span> {{ description }}
             </p>
             <p class="feels">
               Feels like
-              <Transition name="unit-swap">
-                <span :key="`feels-${unit}`">{{
-                  temperature(weatherData.main?.feels_like)
-                }}</span>
-              </Transition>
+              <span class="temp-slot temp-slot-inline">
+                <Transition name="unit-swap">
+                  <span :key="`feels-${unit}`" class="temp-value">{{
+                    temperature(weatherData.main?.feels_like)
+                  }}</span>
+                </Transition>
+              </span>
               · Wind {{ wind }}
             </p>
           </div>
