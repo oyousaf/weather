@@ -186,6 +186,7 @@ h1 em {
 }
 .search-wrap {
   position: relative;
+  z-index: 5;
   display: flex;
   align-items: center;
   max-width: 570px;
