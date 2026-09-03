@@ -299,6 +299,20 @@ h1 em {
   opacity: 0;
   transform: translateY(-8px);
 }
+.unit-swap-enter-active,
+.unit-swap-leave-active {
+  transition:
+    opacity 0.18s ease,
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.unit-swap-enter-from,
+.unit-swap-leave-to {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.unit-swap-leave-active {
+  position: absolute;
+}
 .forecast-heading,
 .current-weather {
   display: flex;
@@ -319,6 +333,9 @@ h1 em {
 .detail p {
   color: #ffffff8f;
   font-size: 0.85rem;
+}
+.feels {
+  position: relative;
 }
 .unit-toggle {
   display: flex;
@@ -342,6 +359,7 @@ h1 em {
   padding: 52px 0 42px;
 }
 .temperature {
+  position: relative;
   margin: 0;
   font-size: clamp(5rem, 14vw, 9rem);
   font-weight: 700;

@@ -120,7 +120,7 @@ useSeoMeta({
     <Transition name="forecast" mode="out-in">
       <section
         v-if="!isLoading && condition"
-        :key="`${location}-${weatherData.dt}-${unit}`"
+        :key="`${location}-${weatherData.dt}`"
         class="forecast-card"
         aria-live="polite"
       >
@@ -157,13 +157,24 @@ useSeoMeta({
         </div>
         <div class="current-weather">
           <div>
-            <p class="temperature">{{ temperature(weatherData.main?.temp) }}</p>
+            <p class="temperature">
+              <Transition name="unit-swap" mode="out-in">
+                <span :key="unit">{{
+                  temperature(weatherData.main?.temp)
+                }}</span>
+              </Transition>
+            </p>
             <p class="condition">
               {{ condition }} <span>·</span> {{ description }}
             </p>
             <p class="feels">
-              Feels like {{ temperature(weatherData.main?.feels_like) }} · Wind
-              {{ wind }}
+              Feels like
+              <Transition name="unit-swap" mode="out-in">
+                <span :key="`feels-${unit}`">{{
+                  temperature(weatherData.main?.feels_like)
+                }}</span>
+              </Transition>
+              · Wind {{ wind }}
             </p>
           </div>
           <img
