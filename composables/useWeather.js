@@ -80,7 +80,7 @@ export function useWeather() {
     return {
       "--temp-tint": `hsl(${t.hue.toFixed(1)} ${t.sat.toFixed(1)}% ${t.light.toFixed(1)}%)`,
       "--temp-accent": `hsl(${t.accentHue.toFixed(1)} ${t.sat.toFixed(1)}% ${Math.min(72, t.light + 10).toFixed(1)}%)`,
-      "--temp-tint-opacity": (Math.min(1, Math.abs(t.accentHue - 75) / 80) * 0.5).toFixed(3),
+      "--temp-tint-opacity": (Math.min(1, Math.abs(t.accentHue - 75) / 80) * 0.85).toFixed(3),
     };
   });
   const isDay = computed(() => {
