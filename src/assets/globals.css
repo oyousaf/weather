@@ -71,8 +71,8 @@ button {
     var(--temp-tint, transparent) 0%,
     transparent 65%
   );
-  mix-blend-mode: soft-light;
-  opacity: var(--temp-tint-opacity, 0.35);
+  mix-blend-mode: color;
+  opacity: var(--temp-tint-opacity, 0.55);
   transition:
     background 0.7s ease,
     opacity 0.7s ease;
