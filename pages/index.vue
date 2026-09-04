@@ -31,6 +31,7 @@ const {
   handleKeydown,
   search,
   locate,
+  locateByIp,
 } = useWeather();
 
 const searchWrapRef = ref(null);
@@ -58,6 +59,8 @@ useEventListener(window, "keydown", (event) => {
   }
 });
 
+onMounted(locateByIp);
+
 useSeoMeta({
   title: "Weatherly — Weather with personality",
   description:
@@ -83,7 +86,7 @@ useSeoMeta({
       <NuxtLink to="/" class="brand" aria-label="Weatherly home"
         ><span class="brand-mark">✦</span> weatherly</NuxtLink
       >
-      <button class="location-button" type="button" @click="locate">
+      <button class="location-button" type="button" @click="locate" title="Approximate location from your network. Tap for browser-precise location.">
         <span>⌖</span> Use my location
       </button>
     </header>

@@ -242,6 +242,25 @@ export function useWeather() {
       city ? selectCity(city) : search();
     }
   };
+
+  const locateByIp = async () => {
+    const lastAttempt = localStorage.getItem("weatherly:ipLookupAt");
+    const ONE_DAY = 24 * 60 * 60 * 1000;
+    if (lastAttempt && Date.now() - Number(lastAttempt) < ONE_DAY) return;
+    isFetching.value = true;
+    isLoading.value = true;
+    try {
+      const data = await $fetch("/api/geo");
+      if (data && data.lat != null && data.lon != null) {
+        if (data.city) selectedLabel.value = data.city;
+        fetchWeather({ lat: String(data.lat), lon: String(data.lon) });
+      }
+      localStorage.setItem("weatherly:ipLookupAt", String(Date.now()));
+    } catch {} finally {
+      isFetching.value = false;
+      isLoading.value = false;
+    }
+  };
   const locate = () => {
     if (!navigator.geolocation) {
       errorMessage.value =
@@ -305,5 +324,6 @@ export function useWeather() {
     handleKeydown,
     search,
     locate,
+    locateByIp,
   };
 }
