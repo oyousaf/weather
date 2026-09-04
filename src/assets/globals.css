@@ -79,10 +79,11 @@ button {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: -2;
   overflow: hidden;
 }
 .orb {
+  z-index: 0;
   position: absolute;
   border-radius: 50%;
   filter: blur(2px);

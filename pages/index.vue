@@ -58,8 +58,6 @@ useEventListener(window, "keydown", (event) => {
   }
 });
 
-onMounted(locate);
-
 useSeoMeta({
   title: "Weatherly — Weather with personality",
   description:
