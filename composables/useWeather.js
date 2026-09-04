@@ -25,16 +25,6 @@ export function useWeather() {
   let searchTimer;
   let suggestionTimer;
 
-  if (import.meta.client) {
-    const CACHE_MAX_AGE_MS = 30 * 60 * 1000;
-    const cached = weatherData.value;
-    if (cached?.dt) {
-      const fetchedAt = cached.dt * 1000;
-      if (Date.now() - fetchedAt > CACHE_MAX_AGE_MS) {
-        weatherData.value = {};
-      }
-    }
-  }
 
   const condition = computed(() => weatherData.value.weather?.[0]?.main || "");
   const description = computed(
