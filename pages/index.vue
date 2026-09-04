@@ -41,14 +41,16 @@ const unitFButtonRef = ref(null);
 const orbOneRef = ref(null);
 const orbTwoRef = ref(null);
 
-const PARTICLE_COUNT = 14;
-const particles = ref(Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
-  id: i,
-  x: 10 + Math.random() * 80,
-  y: 10 + Math.random() * 80,
-  size: 4 + Math.random() * 6,
-  delay: -Math.random() * 12,
-})));
+const PARTICLE_COUNT = 35;
+const particles = ref(
+  Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
+    id: i,
+    x: 10 + Math.random() * 80,
+    y: 10 + Math.random() * 80,
+    size: 4 + Math.random() * 6,
+    delay: -Math.random() * 12,
+  })),
+);
 const particleRefs = particles.value.map(() => ref(null));
 
 const searchGlow = usePointerGlow(searchWrapRef);
@@ -93,9 +95,15 @@ useSeoMeta({
       <span ref="orbTwoRef" class="orb orb-two" />
       <span
         v-for="(p, i) in particles"
-        :ref="el => (particleRefs[i].value = el)"
+        :ref="(el) => (particleRefs[i].value = el)"
         :key="p.id"
-        :style="{ left: p.x + '%', top: p.y + '%', width: p.size + 'px', height: p.size + 'px', animationDelay: p.delay + 's' }"
+        :style="{
+          left: p.x + '%',
+          top: p.y + '%',
+          width: p.size + 'px',
+          height: p.size + 'px',
+          animationDelay: p.delay + 's',
+        }"
         class="particle"
         aria-hidden="true"
       />
@@ -105,7 +113,12 @@ useSeoMeta({
       <NuxtLink to="/" class="brand" aria-label="Weatherly home"
         ><span class="brand-mark">✦</span> weatherly</NuxtLink
       >
-      <button class="location-button" type="button" @click="locate" title="Approximate location from your network. Tap for browser-precise location.">
+      <button
+        class="location-button"
+        type="button"
+        @click="locate"
+        title="Approximate location from your network. Tap for browser-precise location."
+      >
         <span>⌖</span> Use my location
       </button>
     </header>
