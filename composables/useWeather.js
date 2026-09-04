@@ -39,10 +39,12 @@ export function useWeather() {
   const condition = computed(() => weatherData.value.weather?.[0]?.main || "");
   const description = computed(
     () => weatherData.value.weather?.[0]?.description || "",
-  );
+  );const titleCase = (s) =>
+  s
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+    .replace(/\b(of|de|la|el|los|las|da|do|das|di|du|le|the|and|in|on|at|to|from|by|for|with|st|saint)\b/g, (m) => m.toLowerCase());
   const location = computed(
-    () =>
-      selectedLabel.value || weatherData.value.name || "Your local forecast",
+    () => titleCase(selectedLabel.value || weatherData.value.name || "Your local forecast"),
   );
   const country = computed(() => weatherData.value.sys?.country || "");
   const theme = computed(() => {
@@ -78,6 +80,7 @@ export function useWeather() {
     return {
       "--temp-tint": `hsl(${t.hue.toFixed(1)} ${t.sat.toFixed(1)}% ${t.light.toFixed(1)}%)`,
       "--temp-accent": `hsl(${t.accentHue.toFixed(1)} ${t.sat.toFixed(1)}% ${Math.min(72, t.light + 10).toFixed(1)}%)`,
+      "--temp-tint-opacity": (Math.min(1, Math.abs(t.accentHue - 75) / 80) * 0.5).toFixed(3),
     };
   });
   const isDay = computed(() => {

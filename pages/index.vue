@@ -41,11 +41,23 @@ const unitFButtonRef = ref(null);
 const orbOneRef = ref(null);
 const orbTwoRef = ref(null);
 
+const PARTICLE_COUNT = 14;
+const particles = ref(Array.from({ length: PARTICLE_COUNT }, (_, i) => ({
+  id: i,
+  x: 10 + Math.random() * 80,
+  y: 10 + Math.random() * 80,
+  size: 4 + Math.random() * 6,
+  delay: -Math.random() * 12,
+})));
+const particleRefs = particles.value.map(() => ref(null));
+
 const searchGlow = usePointerGlow(searchWrapRef);
 const unitCGlow = usePointerGlow(unitCButtonRef);
 const unitFGlow = usePointerGlow(unitFButtonRef);
 
 useOrbRepel([orbOneRef, orbTwoRef], { radius: 250, maxPush: 60 });
+useParticles(particleRefs, { radius: 130, maxPush: 45 });
+useParticles(particleRefs, { radius: 130, maxPush: 45 });
 
 useEventListener(window, "keydown", (event) => {
   const isShortcut =
@@ -80,6 +92,14 @@ useSeoMeta({
     <div class="atmosphere" aria-hidden="true">
       <span ref="orbOneRef" class="orb orb-one" />
       <span ref="orbTwoRef" class="orb orb-two" />
+      <span
+        v-for="(p, i) in particles"
+        :ref="el => (particleRefs[i].value = el)"
+        :key="p.id"
+        :style="{ left: p.x + '%', top: p.y + '%', width: p.size + 'px', height: p.size + 'px', animationDelay: p.delay + 's' }"
+        class="particle"
+        aria-hidden="true"
+      />
       <span class="rain-lines" />
     </div>
     <header class="topbar">

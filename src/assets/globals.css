@@ -72,7 +72,7 @@ button {
     transparent 65%
   );
   mix-blend-mode: soft-light;
-  opacity: 0.45;
+  opacity: var(--temp-tint-opacity, 0.35);
   transition:
     background 0.7s ease,
     opacity 0.7s ease;
@@ -89,7 +89,7 @@ button {
   position: absolute;
   border-radius: 50%;
   filter: blur(2px);
-  opacity: 0.55;
+  opacity: 0.18;
   --repel-x: 0px;
   --repel-y: 0px;
   animation: drift 14s ease-in-out infinite alternate;
@@ -103,7 +103,7 @@ button {
   background: radial-gradient(
     circle,
     var(--temp-accent, var(--accent)),
-    transparent 75%
+    transparent 72%
   );
   transition: background 0.7s ease;
 }
@@ -115,10 +115,27 @@ button {
   background: radial-gradient(
     circle,
     var(--temp-accent, var(--accent-strong)),
-    transparent 78%
+    transparent 75%
   );
   transition: background 0.7s ease;
   animation-delay: -5s;
+}
+.particle {
+  position: absolute;
+  z-index: 1;
+  border-radius: 50%;
+  background: var(--temp-accent, var(--accent));
+  box-shadow: 0 0 6px 1px var(--temp-accent, var(--accent));
+  opacity: 0.55;
+  pointer-events: none;
+  will-change: transform;
+  animation: particleFloat 9s ease-in-out infinite alternate;
+  transition: background 0.7s ease, box-shadow 0.7s ease;
+}
+@keyframes particleFloat {
+  0%   { transform: translate(var(--px-off, 0px), var(--py-off, 0px)) scale(1); }
+  50%  { transform: translate(calc(-8px + var(--px-off, 0px)), calc(12px + var(--py-off, 0px))) scale(0.85); }
+  100% { transform: translate(calc(10px + var(--px-off, 0px)), calc(-10px + var(--py-off, 0px))) scale(1.05); }
 }
 .rain-lines {
   position: absolute;
