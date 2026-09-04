@@ -57,7 +57,6 @@ const unitFGlow = usePointerGlow(unitFButtonRef);
 
 useOrbRepel([orbOneRef, orbTwoRef], { radius: 250, maxPush: 60 });
 useParticles(particleRefs, { radius: 130, maxPush: 45 });
-useParticles(particleRefs, { radius: 130, maxPush: 45 });
 
 useEventListener(window, "keydown", (event) => {
   const isShortcut =
