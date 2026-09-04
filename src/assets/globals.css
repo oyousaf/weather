@@ -72,8 +72,10 @@ button {
     transparent 65%
   );
   mix-blend-mode: soft-light;
-  opacity: 0.65;
-  transition: background 0.7s ease, opacity 0.7s ease;
+  opacity: 0.45;
+  transition:
+    background 0.7s ease,
+    opacity 0.7s ease;
 }
 .atmosphere {
   position: absolute;
@@ -87,7 +89,7 @@ button {
   position: absolute;
   border-radius: 50%;
   filter: blur(2px);
-  opacity: 0.23;
+  opacity: 0.55;
   --repel-x: 0px;
   --repel-y: 0px;
   animation: drift 14s ease-in-out infinite alternate;
@@ -98,7 +100,11 @@ button {
   height: 48vw;
   top: -22vw;
   right: -12vw;
-  background: radial-gradient(circle, var(--temp-accent, var(--accent)), transparent 68%);
+  background: radial-gradient(
+    circle,
+    var(--temp-accent, var(--accent)),
+    transparent 75%
+  );
   transition: background 0.7s ease;
 }
 .orb-two {
@@ -106,7 +112,11 @@ button {
   height: 38vw;
   bottom: -22vw;
   left: -15vw;
-  background: radial-gradient(circle, var(--temp-accent, var(--accent-strong)), transparent 70%);
+  background: radial-gradient(
+    circle,
+    var(--temp-accent, var(--accent-strong)),
+    transparent 78%
+  );
   transition: background 0.7s ease;
   animation-delay: -5s;
 }
