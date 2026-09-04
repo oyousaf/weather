@@ -9,7 +9,6 @@ const {
   highlightedIndex,
   isLoading,
   isLocating,
-  isFetching,
   errorMessage,
   weatherData,
   condition,
